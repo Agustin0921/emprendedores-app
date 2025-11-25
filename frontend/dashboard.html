@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Dashboard - Emprendedores</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="header">
+<h2 id="userTitle">Mi emprendimiento</h2>
+<div>
+<button id="logoutBtn" class="btn small">Salir</button>
+</div>
+</header>
+
+
+<main class="container grid">
+<section class="card">
+<h3>Resumen</h3>
+<p>Total ingresos: <strong id="totalIncome">0</strong></p>
+<p>Total egresos: <strong id="totalExpenses">0</strong></p>
+<p>Balance: <strong id="balance">0</strong></p>
+</section>
+
+
+<section class="card">
+<h3>Agregar entrada</h3>
+<form id="entryForm">
+<select id="entryType">
+<option value="INCOME">Ingreso</option>
+<option value="EXPENSE">Egreso</option>
+</select>
+<input type="number" id="entryAmount" placeholder="Monto" step="0.01" required />
+<input type="text" id="entryNote" placeholder="Nota (opcional)" />
+<button type="submit" class="btn">Agregar</button>
+</form>
+</section>
+
+
+<section class="card">
+<h3>Inventario</h3>
+<form id="itemForm">
+<input type="text" id="itemName" placeholder="Nombre" required />
+<input type="number" id="itemQty" placeholder="Cantidad" required />
+<input type="number" id="itemPrice" placeholder="Precio" step="0.01" required />
+<button type="submit" class="btn">Agregar ítem</button>
+</form>
+<div id="inventoryList"></div>
+</section>
+
+
+<section class="card">
+<h3>Calculadora rápida</h3>
+<input id="calcExpr" placeholder="e.g. 100+50-30" />
+<button id="calcBtn" class="btn">Calcular</button>
+<p>Resultado: <strong id="calcResult">-</strong></p>
+<button id="saveCalc" class="btn">Guardar como ingreso</button>
+</section>
+
+
+<section class="card wide" id="entriesSection">
+<h3>Entradas - historial</h3>
+<div id="entriesList"></div>
+</section>
+</main>
+
+
+<script src="app.js"></script>
+</body>
+</html>

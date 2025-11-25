@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Registro - Emprendedores</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="container">
+        <div class="card">
+        <h1>Registro</h1>
+        <form id="registerForm">
+            <label>Nombre de usuario</label>
+            <input type="text" id="regUsername" required />
+            
+            
+            <label>Email</label>
+            <input type="email" id="regEmail" required />
+            
+            
+            <label>Contraseña</label>
+            <input type="password" id="regPassword" required minlength="6" />
+            
+            
+            <button type="submit" class="btn">Crear cuenta</button>
+        </form>
+        <p>¿Tenés cuenta? <a href="login.html">Iniciar sesión</a></p>
+        </div>
+    </main>
+<script src="app.js"></script>
+</body>
+</html>

@@ -4,26 +4,18 @@ const app = express();
 
 app.use(cors({
     origin: [
+        /\.vercel\.app$/,
         "http://localhost:3000",
         "http://127.0.0.1:5500",
         "http://localhost:5500",
-        /\.vercel\.app$/   // ACEPTA CUALQUIER SUBDOMINIO DE VERCEL
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true
 }));
 
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", req.headers.origin);
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-    next();
-});
-
-app.options("*", (req, res) => {
-    res.sendStatus(200);
-});
+// Fix Railway + Express
+app.options("/**", cors());
 
 app.use(express.json());
 

@@ -1,7 +1,7 @@
-// API base
-const API_URL = "https://emprendedores-app-production.up.railway.app";
+// API base - ACTUALIZA ESTA URL CON TU NUEVO BACKEND EN RENDER
+const API_URL = "https://emprendedores-app.onrender.com";
 
-// AUTH helpers - VERSIÓN CORREGIDA
+// AUTH helpers - VERSIÓN CORREGIDA SIN ERRORES DE SINTAXIS
 async function apiFetch(path, opts = {}) {
   const token = localStorage.getItem("token");
 

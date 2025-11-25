@@ -1,47 +1,25 @@
-// db.js TEMPORAL - usa MySQL hasta que instales pg
-const mysql = require('mysql2');
+const { Pool } = require('pg');
 
-console.log("🔧 Configurando conexión MySQL (temporal)...");
+console.log("🔧 Configurando conexión PostgreSQL...");
+console.log("📊 DATABASE_URL:", process.env.DATABASE_URL ? "✅ Definida" : "❌ No definida");
 
-// Para desarrollo sin base de datos
-if (!process.env.DATABASE_URL && !process.env.MYSQLHOST) {
-  console.log("⚠️  Modo desarrollo - sin base de datos");
-  module.exports = {
-    query: (text, params, callback) => {
-      console.log("📝 Query simulada:", text);
-      if (callback) callback(null, []);
-      return { then: (cb) => cb({ rows: [] }) };
-    }
-  };
-  return;
-}
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
-// Si hay variables de MySQL, usar MySQL
-if (process.env.MYSQLHOST) {
-  const db = mysql.createPool({
-    host: process.env.MYSQLHOST,
-    user: process.env.MYSQLUSER,
-    password: process.env.MYSQLPASSWORD,
-    database: process.env.MYSQLDATABASE,
-    port: parseInt(process.env.MYSQLPORT) || 3306,
-  });
+// Probar conexión
+pool.connect((err, client, release) => {
+  if (err) {
+    console.error('❌ Error conectando a PostgreSQL:', err.message);
+  } else {
+    console.log('✅ Conectado a PostgreSQL en Render');
+    release();
+  }
+});
 
-  module.exports = {
-    query: (text, params, callback) => {
-      if (callback) {
-        return db.query(text, params, callback);
-      }
-      return new Promise((resolve, reject) => {
-        db.query(text, params, (err, results) => {
-          if (err) reject(err);
-          else resolve(results);
-        });
-      });
-    }
-  };
-} else {
-  console.log("❌ No hay configuración de base de datos");
-  module.exports = {
-    query: () => Promise.reject(new Error("Base de datos no configurada"))
-  };
-}
+module.exports = {
+  query: (text, params) => pool.query(text, params),
+};

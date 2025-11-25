@@ -1,5 +1,5 @@
 // API base
-const API_URL = "http://localhost:4000";
+const API_URL = "https://emprendedores-app-production.up.railway.app";
 
 // AUTH helpers
 async function apiFetch(path, opts = {}) {

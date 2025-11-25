@@ -1,7 +1,7 @@
 // API base
 const API_URL = "https://emprendedores-app-production.up.railway.app";
 
-// AUTH helpers - MEJORADO CON MANEJO DE ERRORES
+// AUTH helpers - VERSIÓN CORREGIDA
 async function apiFetch(path, opts = {}) {
   const token = localStorage.getItem("token");
 
@@ -10,24 +10,26 @@ async function apiFetch(path, opts = {}) {
     ...(opts.headers || {})
   };
 
-  if (token) headers["Authorization"] = "Bearer " + token;
+  if (token) {
+    headers["Authorization"] = "Bearer " + token;
+  }
 
   try {
     console.log(`📡 Haciendo petición a: ${API_URL + path}`);
-    const res = await fetch(API_URL + path, {
+    const response = await fetch(API_URL + path, {
       ...opts,
-      headers
+      headers: headers
     });
 
-    console.log(`📡 Respuesta recibida: ${res.status}`);
+    console.log(`📡 Respuesta recibida: ${response.status}`);
     
-    if (!res.ok) {
-      const errorText = await res.text();
-      console.error(`❌ Error HTTP: ${res.status}`, errorText);
-      throw new Error(`Error ${res.status}: ${errorText}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`❌ Error HTTP: ${response.status}`, errorText);
+      throw new Error(`Error ${response.status}: ${errorText}`);
     }
     
-    const data = await res.json();
+    const data = await response.json();
     return data;
   } catch (error) {
     console.error("❌ Error en apiFetch:", error);
@@ -37,7 +39,7 @@ async function apiFetch(path, opts = {}) {
 
 // --- LOGIN HANDLER ---
 if (document.getElementById("loginForm")) {
-  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  document.getElementById("loginForm").addEventListener("submit", async function(e) {
     e.preventDefault();
     console.log("🔄 Iniciando proceso de login...");
 
@@ -53,7 +55,7 @@ if (document.getElementById("loginForm")) {
     try {
       const res = await apiFetch("/auth/login", {
         method: "POST",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email, password: password }),
       });
 
       console.log("✅ Respuesta del login:", res);
@@ -78,7 +80,7 @@ if (document.getElementById("loginForm")) {
 
 // --- REGISTER HANDLER ---
 if (document.getElementById("registerForm")) {
-  document.getElementById("registerForm").addEventListener("submit", async (e) => {
+  document.getElementById("registerForm").addEventListener("submit", async function(e) {
     e.preventDefault();
     console.log("🔄 Iniciando proceso de registro...");
 
@@ -95,7 +97,11 @@ if (document.getElementById("registerForm")) {
     try {
       const res = await apiFetch("/auth/register", {
         method: "POST",
-        body: JSON.stringify({ email, password, username }),
+        body: JSON.stringify({ 
+          email: email, 
+          password: password, 
+          username: username 
+        }),
       });
 
       console.log("✅ Respuesta del registro:", res);
@@ -137,7 +143,7 @@ if (document.getElementById("entryForm")) {
     console.log("👤 Usuario decodificado:", decoded);
     
     if (document.getElementById("userTitle")) {
-      document.getElementById("userTitle").innerText = "Hola, " + (decoded.username || "Usuario") + "!";
+      document.getElementById("userTitle").textContent = "Hola, " + (decoded.username || "Usuario") + "!";
     }
   } catch (error) {
     console.error("❌ Error decodificando token:", error);
@@ -147,7 +153,7 @@ if (document.getElementById("entryForm")) {
   }
 
   // Logout
-  document.getElementById("logoutBtn").addEventListener("click", () => {
+  document.getElementById("logoutBtn").addEventListener("click", function() {
     console.log("🚪 Cerrando sesión...");
     localStorage.removeItem("token");
     window.location.href = "login.html";
@@ -171,19 +177,22 @@ if (document.getElementById("entryForm")) {
         let income = 0;
         let expense = 0;
 
-        (entries || []).forEach((e) => {
+        (entries || []).forEach(function(e) {
           const div = document.createElement("div");
           div.className = "entry";
-          div.innerHTML = `<div>${e.type} • ${e.note || ""}</div><div>${Number(e.amount).toFixed(2)}</div>`;
+          div.innerHTML = '<div>' + e.type + ' • ' + (e.note || "") + '</div><div>' + Number(e.amount).toFixed(2) + '</div>';
           entriesList.appendChild(div);
 
-          if (e.type === "INCOME") income += Number(e.amount);
-          else expense += Number(e.amount);
+          if (e.type === "INCOME") {
+            income += Number(e.amount);
+          } else {
+            expense += Number(e.amount);
+          }
         });
 
-        document.getElementById("totalIncome").innerText = income.toFixed(2);
-        document.getElementById("totalExpenses").innerText = expense.toFixed(2);
-        document.getElementById("balance").innerText = (income - expense).toFixed(2);
+        document.getElementById("totalIncome").textContent = income.toFixed(2);
+        document.getElementById("totalExpenses").textContent = expense.toFixed(2);
+        document.getElementById("balance").textContent = (income - expense).toFixed(2);
       }
 
       // Inventory list
@@ -191,7 +200,7 @@ if (document.getElementById("entryForm")) {
       if (invList) {
         invList.innerHTML = "";
 
-        (items || []).forEach((it) => {
+        (items || []).forEach(function(it) {
           const div = document.createElement("div");
           div.className = "item";
 
@@ -207,13 +216,13 @@ if (document.getElementById("entryForm")) {
         });
 
         // Eventos de eliminar item
-        document.querySelectorAll(".deleteBtn").forEach(btn => {
-          btn.addEventListener("click", async () => {
+        document.querySelectorAll(".deleteBtn").forEach(function(btn) {
+          btn.addEventListener("click", async function() {
             const id = btn.getAttribute("data-id");
             if (!confirm("¿Eliminar este producto?")) return;
 
             try {
-              const res = await apiFetch(`/inventory/${id}`, { method: "DELETE" });
+              const res = await apiFetch("/inventory/" + id, { method: "DELETE" });
               if (res.success) {
                 loadData();
               } else {
@@ -239,7 +248,7 @@ if (document.getElementById("entryForm")) {
   }
 
   // Add entry
-  document.getElementById("entryForm").addEventListener("submit", async (e) => {
+  document.getElementById("entryForm").addEventListener("submit", async function(e) {
     e.preventDefault();
     const type = document.getElementById("entryType").value;
     const amount = document.getElementById("entryAmount").value;
@@ -248,7 +257,7 @@ if (document.getElementById("entryForm")) {
     try {
       const res = await apiFetch("/entries", {
         method: "POST",
-        body: JSON.stringify({ type, amount, note }),
+        body: JSON.stringify({ type: type, amount: amount, note: note }),
       });
 
       if (res.success) {
@@ -263,7 +272,7 @@ if (document.getElementById("entryForm")) {
   });
 
   // Add item
-  document.getElementById("itemForm").addEventListener("submit", async (e) => {
+  document.getElementById("itemForm").addEventListener("submit", async function(e) {
     e.preventDefault();
 
     const name = document.getElementById("itemName").value;
@@ -273,7 +282,7 @@ if (document.getElementById("entryForm")) {
     try {
       const res = await apiFetch("/inventory", {
         method: "POST",
-        body: JSON.stringify({ name, qty, price }),
+        body: JSON.stringify({ name: name, qty: qty, price: price }),
       });
 
       if (res.success) {
@@ -288,21 +297,27 @@ if (document.getElementById("entryForm")) {
   });
 
   // Calculator
-  document.getElementById("calcBtn").addEventListener("click", () => {
+  document.getElementById("calcBtn").addEventListener("click", function() {
     const expr = document.getElementById("calcExpr").value;
-    if (/[^0-9+\-*/(). ]/.test(expr)) return alert("Expresión inválida");
+    if (/[^0-9+\-*/(). ]/.test(expr)) {
+      alert("Expresión inválida");
+      return;
+    }
 
     try {
       const r = eval(expr);
-      document.getElementById("calcResult").innerText = r;
+      document.getElementById("calcResult").textContent = r;
     } catch {
       alert("Expresión inválida");
     }
   });
 
-  document.getElementById("saveCalc").addEventListener("click", async () => {
-    const val = document.getElementById("calcResult").innerText;
-    if (!val || val === "-") return alert("Calculá un resultado primero");
+  document.getElementById("saveCalc").addEventListener("click", async function() {
+    const val = document.getElementById("calcResult").textContent;
+    if (!val || val === "-") {
+      alert("Calculá un resultado primero");
+      return;
+    }
 
     try {
       const res = await apiFetch("/entries", {
@@ -314,8 +329,11 @@ if (document.getElementById("entryForm")) {
         }),
       });
 
-      if (res.success) loadData();
-      else alert(res.error || "Error al guardar");
+      if (res.success) {
+        loadData();
+      } else {
+        alert(res.error || "Error al guardar");
+      }
     } catch (error) {
       alert("Error de conexión al guardar cálculo: " + error.message);
     }

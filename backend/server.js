@@ -3,58 +3,58 @@ const cors = require("cors");
 
 const app = express();
 
-// ✅ CORS configurado ANTES de cualquier middleware o ruta
-const corsOptions = {
+// CORS
+app.use(cors({
     origin: [
         "https://emprendedores-app-omega.vercel.app",
-        "http://localhost:3000", 
-        "http://127.0.0.1:5500",
-        "http://localhost:5500"
+        "http://localhost:3000",
+        "http://127.0.0.1:5500"
     ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-    credentials: true,
-    optionsSuccessStatus: 200
-};
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
+}));
 
-// ✅ APLICAR CORS A TODAS LAS RUTAS
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Para preflight requests
-
+app.options('*', cors());
 app.use(express.json());
 
-// ✅ RUTAS BÁSICAS (estas sí funcionan con CORS)
-app.get("/", (req, res) => {
-    res.json({ 
-        message: "🚀 API de Finanzas funcionando!",
-        version: "1.0.0",
-        cors: "Configurado para Vercel"
-    });
-});
+// Debug: Verificar que las rutas se cargan
+console.log("🔄 Cargando rutas...");
 
+try {
+  console.log("✅ Cargando auth...");
+  app.use("/auth", require("./routes/auth"));
+  console.log("✅ Auth cargado");
+} catch (error) {
+  console.error("❌ Error cargando auth:", error);
+}
+
+try {
+  console.log("✅ Cargando entries...");
+  app.use("/entries", require("./routes/entries"));
+  console.log("✅ Entries cargado");
+} catch (error) {
+  console.error("❌ Error cargando entries:", error);
+}
+
+try {
+  console.log("✅ Cargando inventory...");
+  app.use("/inventory", require("./routes/inventory"));
+  console.log("✅ Inventory cargado");
+} catch (error) {
+  console.error("❌ Error cargando inventory:", error);
+}
+
+// Ruta de health
 app.get("/health", (req, res) => {
-    res.json({ 
-        status: "OK", 
-        message: "Server funcionando en Render",
-        timestamp: new Date().toISOString(),
-        cors: true
-    });
-});
-
-// ✅ RUTAS DE LA APLICACIÓN (ahora con CORS aplicado)
-app.use("/auth", require("./routes/auth"));
-app.use("/entries", require("./routes/entries")); 
-app.use("/inventory", require("./routes/inventory"));
-
-// ✅ MANEJO DE ERRORES
-app.use((err, req, res, next) => {
-    console.error("❌ Error:", err);
-    res.status(500).json({ error: "Error interno del servidor" });
+  res.json({ 
+    status: "OK", 
+    message: "Server funcionando en Render",
+    timestamp: new Date().toISOString()
+  });
 });
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
-    console.log(`🎉 Servidor corriendo en puerto ${PORT}`);
-    console.log(`🌐 CORS configurado para todas las rutas`);
-    console.log(`✅ Health: https://emprendedores-app.onrender.com/health`);
+  console.log(`🎉 Servidor corriendo en puerto ${PORT}`);
 });

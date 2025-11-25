@@ -3,65 +3,58 @@ const cors = require("cors");
 
 const app = express();
 
-// Configuración CORS COMPLETA para Render
-app.use(cors({
+// ✅ CORS configurado ANTES de cualquier middleware o ruta
+const corsOptions = {
     origin: [
         "https://emprendedores-app-omega.vercel.app",
-        "https://emprendedores-app-omega.vercel.app/",
-        /\.vercel\.app$/,
-        "http://localhost:3000",
+        "http://localhost:3000", 
         "http://127.0.0.1:5500",
         "http://localhost:5500"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204
-}));
+    optionsSuccessStatus: 200
+};
 
-// Middleware para manejar preflight OPTIONS
-app.options('*', cors());
+// ✅ APLICAR CORS A TODAS LAS RUTAS
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Para preflight requests
 
 app.use(express.json());
 
-// Ruta de health check
+// ✅ RUTAS BÁSICAS (estas sí funcionan con CORS)
+app.get("/", (req, res) => {
+    res.json({ 
+        message: "🚀 API de Finanzas funcionando!",
+        version: "1.0.0",
+        cors: "Configurado para Vercel"
+    });
+});
+
 app.get("/health", (req, res) => {
     res.json({ 
         status: "OK", 
         message: "Server funcionando en Render",
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        cors: true
     });
 });
 
-// Ruta raíz
-app.get("/", (req, res) => {
-    res.json({ 
-        message: "🚀 API de Finanzas para Emprendedores",
-        version: "1.0.0",
-        status: "Online"
-    });
-});
-
-// ==== RUTAS ====
+// ✅ RUTAS DE LA APLICACIÓN (ahora con CORS aplicado)
 app.use("/auth", require("./routes/auth"));
-app.use("/entries", require("./routes/entries"));
+app.use("/entries", require("./routes/entries")); 
 app.use("/inventory", require("./routes/inventory"));
 
-// Manejo de errores
+// ✅ MANEJO DE ERRORES
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Algo salió mal!' });
-});
-
-// Ruta 404
-app.use((req, res) => {
-    res.status(404).json({ error: 'Ruta no encontrada' });
+    console.error("❌ Error:", err);
+    res.status(500).json({ error: "Error interno del servidor" });
 });
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
     console.log(`🎉 Servidor corriendo en puerto ${PORT}`);
-    console.log(`🏥 Health check: /health`);
-    console.log(`🌐 CORS configurado para Vercel`);
+    console.log(`🌐 CORS configurado para todas las rutas`);
+    console.log(`✅ Health: https://emprendedores-app.onrender.com/health`);
 });

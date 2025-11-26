@@ -5,15 +5,14 @@ console.log("📊 DATABASE_URL:", process.env.DATABASE_URL ? "✅ Definida" : "�
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  }
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
 // Probar conexión
 pool.connect((err, client, release) => {
   if (err) {
     console.error('❌ Error conectando a PostgreSQL:', err.message);
+    console.error('❌ Detalles:', err);
   } else {
     console.log('✅ Conectado a PostgreSQL en Render');
     release();

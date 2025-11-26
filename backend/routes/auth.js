@@ -34,21 +34,17 @@ router.post("/register", (req, res) => {
     }
 
     db.query(
-      "INSERT INTO users (email, password, username) VALUES (?, ?, ?)",
+      "INSERT INTO users (email, password, username) VALUES ($1, $2, $3)",
       [email, hash, username],
       (err, result) => {
         if (err) {
           console.error("❌ Error en registro:", err);
-          if (err.code === 'ER_DUP_ENTRY') {
+          if (err.code === '23505') { // Código de duplicado en PostgreSQL
             return res.status(400).json({ error: "El email ya está registrado" });
           }
           return res.status(500).json({ error: "Error en la base de datos" });
         }
-        console.log("✅ Usuario registrado exitosamente, ID:", result.insertId);
-        res.json({ 
-          success: true, 
-          message: "Usuario creado exitosamente. Ahora puedes iniciar sesión." 
-        });
+        // ...
       }
     );
   });

@@ -3,24 +3,30 @@ const cors = require("cors");
 
 const app = express();
 
-// CORS
+// CORS más permisivo para producción
 app.use(cors({
     origin: [
         "https://emprendedores-app-omega.vercel.app",
         "http://localhost:3000",
-        "http://127.0.0.1:5500"
+        "http://127.0.0.1:5500",
+        "https://emprendedores-app-omega.vercel.app"
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true
+    allowedHeaders: ["Content-Type", "Authorization", "Accept"],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 }));
 
+// Middleware para manejar preflight OPTIONS requests
 app.options('*', cors());
+
 app.use(express.json());
 
 // Debug: Verificar que las rutas se cargan
 console.log("🔄 Cargando rutas...");
 
+// Tus rutas actuales...
 try {
   console.log("✅ Cargando auth...");
   app.use("/auth", require("./routes/auth"));

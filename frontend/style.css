@@ -210,104 +210,74 @@ input:focus, select:focus {
   font-weight: 600;
 }
 
-/* CARRUSEL PROFESIONAL - COMPLETAMENTE CORREGIDO */
+/* CARRUSEL SIMPLE Y FUNCIONAL */
 .reminders-carousel {
   position: relative;
-  background: linear-gradient(135deg, var(--white) 0%, var(--cyan-pastel) 100%);
-  padding: 16px 80px;
+  background: var(--cyan-pastel);
+  padding: 12px 60px;
   overflow: hidden;
   color: var(--black);
   border-bottom: 1px solid var(--gray-light);
-  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
 }
 
 .carousel-container {
   overflow: hidden;
   position: relative;
-  height: 70px;
+  height: 50px;
   display: flex;
   align-items: center;
-  border-radius: 12px;
-  background: var(--white);
-  box-shadow: 0 4px 20px rgba(14, 165, 233, 0.1);
-  border: 1px solid rgba(14, 165, 233, 0.1);
 }
 
 .carousel-track {
   display: flex;
-  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: transform 0.4s ease;
   width: 100%;
 }
 
 .carousel-item {
   flex: 0 0 100%;
-  padding: 16px 40px;
+  padding: 0 20px;
   text-align: center;
   font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  font-size: 1rem;
-  position: relative;
+  gap: 10px;
+  font-size: 0.95rem;
   color: var(--gray-dark);
-  min-height: 70px;
+  min-height: 50px;
   box-sizing: border-box;
 }
 
-/* Estilos específicos para recordatorios de alta prioridad en el carrusel */
+/* Estilos simples para recordatorios en el carrusel */
 .carousel-item.high-priority {
-  background: linear-gradient(135deg, var(--magenta-pastel), var(--white));
-  border: 2px solid var(--magenta);
-  border-radius: 8px;
-  margin: 0 20%;
-  position: relative;
-  padding: 14px 30px;
-}
-
-.carousel-item.high-priority::before {
-  content: '🔴 ALTA PRIORIDAD';
-  position: absolute;
-  top: -10px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--magenta);
-  color: var(--white);
-  padding: 3px 12px;
-  border-radius: 16px;
-  font-size: 0.7rem;
+  color: var(--magenta);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(219, 39, 119, 0.3);
-  z-index: 2;
-  white-space: nowrap;
 }
 
 .carousel-item.high-priority i {
   color: var(--magenta);
-  background: var(--white);
+  animation: pulse 2s infinite;
 }
 
-.carousel-item::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 4px;
-  height: 24px;
-  background: linear-gradient(135deg, var(--cyan), var(--cyan-light));
-  border-radius: 0 3px 3px 0;
+.carousel-item.medium-priority {
+  color: var(--yellow);
+  font-weight: 500;
+}
+
+.carousel-item.low-priority {
+  color: var(--cyan);
 }
 
 .carousel-item i {
-  font-size: 1.2rem;
-  color: var(--cyan);
-  background: var(--cyan-pastel);
-  padding: 6px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.15);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
 
 .carousel-btn {
@@ -317,32 +287,57 @@ input:focus, select:focus {
   background: var(--white);
   border: 1px solid var(--gray-light);
   color: var(--cyan);
-  padding: 10px 12px;
+  padding: 8px 10px;
   cursor: pointer;
-  border-radius: 50%;
-  font-size: 16px;
+  border-radius: 6px;
+  font-size: 14px;
   transition: all 0.3s ease;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
 .carousel-btn:hover {
   background: var(--cyan);
   color: var(--white);
-  transform: translateY(-50%) scale(1.1);
+  transform: translateY(-50%) scale(1.05);
   box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
   border-color: var(--cyan);
 }
 
 .carousel-btn.prev {
-  left: 15px;
+  left: 10px;
 }
 
 .carousel-btn.next {
-  right: 15px;
+  right: 10px;
+}
+
+/* Indicadores del carrusel */
+.carousel-indicators {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+  z-index: 5;
+}
+
+.carousel-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gray);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.carousel-indicator.active {
+  background: var(--cyan);
+  transform: scale(1.2);
 }
 
 /* LISTA DE RECORDATORIOS PERSONALES - (ESTA PARTE ESTÁ BIEN, NO TOCAR) */
@@ -974,26 +969,22 @@ input:focus, select:focus {
   }
   
   .reminders-carousel {
-    padding: 12px 50px;
+    padding: 10px 50px;
   }
   
   .carousel-container {
-    height: 60px;
+    height: 45px;
   }
   
   .carousel-item {
-    padding: 12px 20px;
+    padding: 0 15px;
     font-size: 0.9rem;
+    min-height: 45px;
   }
   
-  .carousel-item.high-priority {
-    margin: 0 15%;
-    padding: 10px 20px;
-  }
-  
-  .carousel-item.high-priority::before {
-    font-size: 0.65rem;
-    padding: 2px 10px;
+  .carousel-btn {
+    padding: 6px 8px;
+    font-size: 12px;
   }
   
   /* Recordatorios alta prioridad en móvil */

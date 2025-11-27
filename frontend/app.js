@@ -19,8 +19,15 @@ async function apiFetch(path, opts) {
       headers: headers
     });
     
+    if (response.status === 401) {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+      throw new Error("No autorizado - Sesión expirada");
+    }
+    
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorText = await response.text();
+      throw new Error(`HTTP error! status: ${response.status}, details: ${errorText}`);
     }
     
     return await response.json();
@@ -121,58 +128,79 @@ if (document.getElementById("entryForm")) {
   });
 
   async function loadData() {
-    try {
-      const entries = await apiFetch("/entries");
-      const items = await apiFetch("/inventory");
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      window.location.href = "login.html";
+      return;
+    }
 
-      const entriesList = document.getElementById("entriesList");
-      entriesList.innerHTML = "";
-      let income = 0;
-      let expense = 0;
+    // Cargar datos en paralelo con manejo de errores individual
+    const [entries, items] = await Promise.all([
+      apiFetch("/entries").catch(err => {
+        console.error("Error cargando entries:", err);
+        return [];
+      }),
+      apiFetch("/inventory").catch(err => {
+        console.error("Error cargando inventory:", err);
+        return [];
+      })
+    ]);
 
-      (entries || []).forEach(function(e) {
-        const div = document.createElement("div");
-        div.className = "entry";
-        div.innerHTML = '<div>' + e.type + ' • ' + (e.note || "") + '</div><div>' + Number(e.amount).toFixed(2) + '</div>';
-        entriesList.appendChild(div);
+    const entriesList = document.getElementById("entriesList");
+    entriesList.innerHTML = "";
+    let income = 0;
+    let expense = 0;
 
-        if (e.type === "INCOME") income += Number(e.amount);
-        else expense += Number(e.amount);
+    (entries || []).forEach(function(e) {
+      const div = document.createElement("div");
+      div.className = "entry";
+      div.innerHTML = '<div>' + e.type + ' • ' + (e.note || "") + '</div><div>' + Number(e.amount).toFixed(2) + '</div>';
+      entriesList.appendChild(div);
+
+      if (e.type === "INCOME") income += Number(e.amount);
+      else expense += Number(e.amount);
+    });
+
+    document.getElementById("totalIncome").textContent = income.toFixed(2);
+    document.getElementById("totalExpenses").textContent = expense.toFixed(2);
+    document.getElementById("balance").textContent = (income - expense).toFixed(2);
+
+    const invList = document.getElementById("inventoryList");
+    invList.innerHTML = "";
+
+    (items || []).forEach(function(it) {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = '<div>' + it.name + ' x' + it.qty + '</div><div>$' + Number(it.price).toFixed(2) + '<button class="deleteBtn" data-id="' + it.id + '">🗑</button></div>';
+      invList.appendChild(div);
+    });
+
+    document.querySelectorAll(".deleteBtn").forEach(function(btn) {
+      btn.addEventListener("click", async function() {
+        const id = btn.getAttribute("data-id");
+        if (!confirm("¿Eliminar este producto?")) return;
+
+        try {
+          const res = await apiFetch("/inventory/" + id, { method: "DELETE" });
+          if (res.success) loadData();
+          else alert("Error al eliminar producto");
+        } catch (error) {
+          alert("Error de conexión al eliminar producto");
+        }
       });
+    });
 
-      document.getElementById("totalIncome").textContent = income.toFixed(2);
-      document.getElementById("totalExpenses").textContent = expense.toFixed(2);
-      document.getElementById("balance").textContent = (income - expense).toFixed(2);
-
-      const invList = document.getElementById("inventoryList");
-      invList.innerHTML = "";
-
-      (items || []).forEach(function(it) {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = '<div>' + it.name + ' x' + it.qty + '</div><div>$' + Number(it.price).toFixed(2) + '<button class="deleteBtn" data-id="' + it.id + '">🗑</button></div>';
-        invList.appendChild(div);
-      });
-
-      document.querySelectorAll(".deleteBtn").forEach(function(btn) {
-        btn.addEventListener("click", async function() {
-          const id = btn.getAttribute("data-id");
-          if (!confirm("¿Eliminar este producto?")) return;
-
-          try {
-            const res = await apiFetch("/inventory/" + id, { method: "DELETE" });
-            if (res.success) loadData();
-            else alert("Error al eliminar producto");
-          } catch (error) {
-            alert("Error de conexión al eliminar producto");
-          }
-        });
-      });
-
-    } catch (error) {
+  } catch (error) {
+    console.error("Error cargando datos:", error);
+    if (error.message.includes("401") || error.message.includes("Token") || error.message.includes("autorizado")) {
+      localStorage.removeItem("token");
+      window.location.href = "login.html";
+    } else {
       alert("Error cargando datos: " + error.message);
     }
   }
+}
 
   document.getElementById("entryForm").addEventListener("submit", async function(e) {
     e.preventDefault();

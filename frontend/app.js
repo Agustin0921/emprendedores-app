@@ -476,22 +476,32 @@ if (document.getElementById("entryForm")) {
     });
   }
 
-  // CARRUSEL DE RECORDATORIOS - Solo si existe
+  // CARRUSEL DE RECORDATORIOS MEJORADO - Solo si existe
   const carouselTrack = document.getElementById('carouselTrack');
   if (carouselTrack) {
     let currentSlide = 0;
-    const defaultReminders = [
-      "📅 Revisa tu inventario regularmente",
-      "💰 Actualiza tus precios según costos",
-      "📊 Analiza tus métricas mensuales",
-      "🎯 Establece metas realistas"
-    ];
+    let userReminders = JSON.parse(localStorage.getItem('userReminders')) || [];
 
     function initializeCarousel() {
-      defaultReminders.forEach(reminder => {
+      carouselTrack.innerHTML = '';
+      
+      // Si no hay recordatorios del usuario, mostrar mensaje
+      if (userReminders.length === 0) {
+        const emptyItem = document.createElement('div');
+        emptyItem.className = 'carousel-item';
+        emptyItem.textContent = 'No tienes recordatorios. Agrega algunos en la sección "Mis Recordatorios"';
+        carouselTrack.appendChild(emptyItem);
+        return;
+      }
+      
+      // Mostrar recordatorios del usuario
+      userReminders.forEach(reminder => {
         const item = document.createElement('div');
         item.className = 'carousel-item';
-        item.textContent = reminder;
+        item.innerHTML = `
+          <span class="reminder-priority-badge ${reminder.priority}">${reminder.priority}</span>
+          ${reminder.text}
+        `;
         carouselTrack.appendChild(item);
       });
     }
@@ -520,9 +530,27 @@ if (document.getElementById("entryForm")) {
     }
 
     // AUTO AVANCE DEL CARRUSEL
-    setInterval(() => {
+    let carouselInterval = setInterval(() => {
       showSlide(currentSlide + 1);
     }, 5000);
+
+    // Pausar carrusel al hacer hover
+    carouselTrack.addEventListener('mouseenter', () => {
+      clearInterval(carouselInterval);
+    });
+
+    carouselTrack.addEventListener('mouseleave', () => {
+      carouselInterval = setInterval(() => {
+        showSlide(currentSlide + 1);
+      }, 5000);
+    });
+
+    // Función para actualizar el carrusel cuando se agregan nuevos recordatorios
+    window.updateCarousel = function() {
+      userReminders = JSON.parse(localStorage.getItem('userReminders')) || [];
+      initializeCarousel();
+      showSlide(0);
+    };
 
     initializeCarousel();
     showSlide(0);
@@ -623,6 +651,11 @@ if (document.getElementById("entryForm")) {
           userReminders.splice(index, 1);
           localStorage.setItem('userReminders', JSON.stringify(userReminders));
           displayUserReminders();
+          
+          // Actualizar carrusel también
+          if (window.updateCarousel) {
+            window.updateCarousel();
+          }
         });
       });
     }
@@ -642,6 +675,11 @@ if (document.getElementById("entryForm")) {
       localStorage.setItem('userReminders', JSON.stringify(userReminders));
       displayUserReminders();
       this.reset();
+      
+      // ACTUALIZAR CARRUSEL
+      if (window.updateCarousel) {
+        window.updateCarousel();
+      }
     });
 
     displayUserReminders();

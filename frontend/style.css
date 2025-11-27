@@ -1113,3 +1113,370 @@ input:focus, select:focus {
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================== */
+/* NUEVOS ESTILOS MEJORADOS */
+/* =========================================== */
+
+/* LAYOUT PRINCIPAL */
+.main-container {
+  display: flex;
+  min-height: calc(100vh - 80px);
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 250px;
+  background: var(--white);
+  border-right: 1px solid var(--gray-border);
+  padding: 20px 0;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+}
+
+.sidebar-header {
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--gray-border);
+  margin-bottom: 20px;
+}
+
+.sidebar-header h3 {
+  color: var(--cyan);
+  margin: 0;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-header h3::before {
+  content: "📊";
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-item {
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-item:hover {
+  background: var(--gray-light);
+  border-left-color: var(--cyan);
+}
+
+.menu-item.active {
+  background: var(--cyan);
+  color: var(--white);
+  border-left-color: var(--magenta);
+}
+
+.menu-item span {
+  font-weight: 500;
+}
+
+/* Iconos del sidebar usando pseudo-elementos */
+.menu-item[data-section="dashboard"]::before {
+  content: "🏠";
+}
+
+.menu-item[data-section="calculator"]::before {
+  content: "🧮";
+}
+
+.menu-item[data-section="reminders"]::before {
+  content: "🔔";
+}
+
+.menu-item[data-section="account"]::before {
+  content: "👤";
+}
+
+/* CONTENIDO PRINCIPAL */
+.content {
+  flex: 1;
+  padding: 20px;
+  background: var(--bg);
+}
+
+.section {
+  display: none;
+}
+
+.section.active {
+  display: block;
+}
+
+/* CARRUSEL DE RECORDATORIOS MEJORADO */
+.reminders-carousel {
+  position: relative;
+  background: linear-gradient(135deg, var(--yellow), var(--magenta));
+  padding: 15px 50px;
+  overflow: hidden;
+  color: white;
+  border-bottom: 3px solid var(--cyan);
+}
+
+.carousel-container {
+  overflow: hidden;
+  position: relative;
+  height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.3s ease;
+  width: 100%;
+}
+
+.carousel-item {
+  flex: 0 0 100%;
+  padding: 10px 20px;
+  text-align: center;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.carousel-item::before {
+  content: "📌";
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.3);
+  border: none;
+  color: white;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 50%;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.carousel-btn:hover {
+  background: rgba(255,255,255,0.5);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn.prev {
+  left: 10px;
+}
+
+.carousel-btn.next {
+  right: 10px;
+}
+
+/* CALCULADORA DE PRECIOS */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.price-result {
+  margin-top: 30px;
+  padding: 20px;
+  background: var(--gray-light);
+  border-radius: 8px;
+  border-left: 4px solid var(--cyan);
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background: var(--white);
+  border-radius: 6px;
+}
+
+.result-item .highlight {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--cyan);
+}
+
+.result-item .success {
+  font-weight: 600;
+  color: var(--success);
+}
+
+/* LISTA DE RECORDATORIOS PERSONALES */
+.reminders-list {
+  margin-top: 20px;
+}
+
+.reminder-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: var(--white);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  border-left: 4px solid;
+  transition: all 0.3s ease;
+}
+
+.reminder-item:hover {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.reminder-item.low {
+  border-left-color: var(--cyan);
+  background: linear-gradient(90deg, rgba(6, 182, 212, 0.1), transparent);
+}
+
+.reminder-item.medium {
+  border-left-color: var(--yellow);
+  background: linear-gradient(90deg, rgba(234, 179, 8, 0.1), transparent);
+}
+
+.reminder-item.high {
+  border-left-color: var(--magenta);
+  background: linear-gradient(90deg, rgba(236, 72, 153, 0.1), transparent);
+}
+
+.reminder-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reminder-content::before {
+  content: "📝";
+}
+
+.reminder-priority {
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: var(--gray-light);
+  margin-left: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.reminder-item.low .reminder-priority {
+  background: var(--cyan);
+  color: white;
+}
+
+.reminder-item.medium .reminder-priority {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+.reminder-item.high .reminder-priority {
+  background: var(--magenta);
+  color: white;
+}
+
+/* INFORMACIÓN DE CUENTA */
+.account-info {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+}
+
+.info-item {
+  padding: 15px;
+  background: var(--gray-light);
+  border-radius: 8px;
+  position: relative;
+  padding-left: 50px;
+}
+
+.info-item::before {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+}
+
+.info-item:nth-child(1)::before { content: "👤"; }
+.info-item:nth-child(2)::before { content: "📧"; }
+.info-item:nth-child(3)::before { content: "📅"; }
+
+.info-item .label {
+  font-weight: 500;
+  color: var(--black);
+  display: block;
+  margin-bottom: 5px;
+}
+
+/* RESPONSIVE PARA NUEVAS SECCIONES */
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    order: 2;
+  }
+  
+  .content {
+    order: 1;
+  }
+  
+  .sidebar-menu {
+    display: flex;
+    overflow-x: auto;
+  }
+  
+  .menu-item {
+    white-space: nowrap;
+    min-width: auto;
+    flex: 1;
+    justify-content: center;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .result-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .account-info {
+    grid-template-columns: 1fr;
+  }
+  
+  .reminders-carousel {
+    padding: 10px 40px;
+  }
+  
+  .carousel-container {
+    height: 50px;
+  }
+}

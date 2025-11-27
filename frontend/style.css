@@ -210,11 +210,11 @@ input:focus, select:focus {
   font-weight: 600;
 }
 
-/* CARRUSEL PROFESIONAL */
+/* CARRUSEL PROFESIONAL ACTUALIZADO */
 .reminders-carousel {
   position: relative;
   background: linear-gradient(135deg, var(--white) 0%, var(--cyan-pastel) 100%);
-  padding: 20px 70px;
+  padding: 20px 80px;
   overflow: hidden;
   color: var(--black);
   border-bottom: 1px solid var(--gray-light);
@@ -224,7 +224,7 @@ input:focus, select:focus {
 .carousel-container {
   overflow: hidden;
   position: relative;
-  height: 70px;
+  height: 80px;
   display: flex;
   align-items: center;
   border-radius: 12px;
@@ -241,7 +241,7 @@ input:focus, select:focus {
 
 .carousel-item {
   flex: 0 0 100%;
-  padding: 18px 40px;
+  padding: 20px 40px;
   text-align: center;
   font-weight: 500;
   display: flex;
@@ -251,6 +251,38 @@ input:focus, select:focus {
   font-size: 1rem;
   position: relative;
   color: var(--gray-dark);
+}
+
+/* Estilos específicos para recordatorios de alta prioridad en el carrusel */
+.carousel-item.high-priority {
+  background: linear-gradient(135deg, var(--magenta-pastel), var(--white));
+  border: 2px solid var(--magenta);
+  border-radius: 8px;
+  margin: 0 20%;
+  position: relative;
+}
+
+.carousel-item.high-priority::before {
+  content: '❗ ALTA PRIORIDAD';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--magenta);
+  color: var(--white);
+  padding: 4px 16px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(219, 39, 119, 0.3);
+  z-index: 2;
+}
+
+.carousel-item.high-priority i {
+  color: var(--magenta);
+  background: var(--white);
 }
 
 .carousel-item::before {
@@ -302,11 +334,11 @@ input:focus, select:focus {
 }
 
 .carousel-btn.prev {
-  left: 15px;
+  left: 20px;
 }
 
 .carousel-btn.next {
-  right: 15px;
+  right: 20px;
 }
 
 /* Indicadores del carrusel */
@@ -355,8 +387,8 @@ input:focus, select:focus {
 
 /* Recordatorios de alta prioridad con margen y destacado */
 .reminder-item.high {
-  margin-left: 25%;
-  margin-right: 25%;
+  margin-left: 10%;
+  margin-right: 10%;
   border: 2px solid var(--magenta);
   border-left: 6px solid var(--magenta);
   background: linear-gradient(135deg, var(--magenta-pastel), var(--white));
@@ -921,18 +953,27 @@ input:focus, select:focus {
   }
   
   .carousel-container {
-    height: 60px;
+    height: 70px;
   }
   
   .carousel-item {
-    padding: 15px 30px;
+    padding: 15px 20px;
     font-size: 0.9rem;
+  }
+  
+  .carousel-item.high-priority {
+    margin: 0 10%;
+  }
+  
+  .carousel-item.high-priority::before {
+    font-size: 0.65rem;
+    padding: 3px 10px;
   }
   
   /* Recordatorios alta prioridad en móvil */
   .reminder-item.high {
-    margin-left: 10%;
-    margin-right: 10%;
+    margin-left: 5%;
+    margin-right: 5%;
   }
   
   .reminder-item.high::before {

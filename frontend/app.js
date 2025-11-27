@@ -570,6 +570,8 @@ if (document.getElementById("entryForm")) {
   // CALCULADORA DE PRECIOS - Solo si existe
   const priceCalculatorForm = document.getElementById('priceCalculatorForm');
   if (priceCalculatorForm) {
+    let currentCalculation = null;
+
     priceCalculatorForm.addEventListener('submit', function(e) {
       e.preventDefault();
       
@@ -587,6 +589,20 @@ if (document.getElementById("entryForm")) {
       const profitAmount = salePrice - totalCost;
       const finalMargin = (profitAmount / salePrice * 100).toFixed(1);
       
+      // Guardar cálculo actual para posible eliminación
+      currentCalculation = {
+        materialCost,
+        toolsCost,
+        hoursWorked,
+        hourlyRate,
+        additionalCosts,
+        profitMargin,
+        totalCost,
+        salePrice,
+        profitAmount,
+        finalMargin
+      };
+      
       // Mostrar resultados
       document.getElementById('totalCost').textContent = '$' + totalCost.toFixed(2);
       document.getElementById('salePrice').textContent = '$' + salePrice.toFixed(2);
@@ -594,22 +610,58 @@ if (document.getElementById("entryForm")) {
       document.getElementById('finalMargin').textContent = finalMargin + '%';
       
       document.getElementById('priceResult').style.display = 'block';
-    });
-  }
-
-  // GUARDAR COMO INGRESO - Solo si existe
-  const saveAsIncome = document.getElementById('saveAsIncome');
-  if (saveAsIncome) {
-    saveAsIncome.addEventListener('click', async function() {
-      const salePrice = document.getElementById('salePrice').textContent.replace('$', '');
       
+      // Actualizar botón de guardar para incluir opción de eliminar
+      updateSaveButton();
+    });
+
+    function updateSaveButton() {
+      const saveButton = document.getElementById('saveAsIncome');
+      if (saveButton && currentCalculation) {
+        // Crear contenedor para botones
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'calculation-actions';
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.gap = '10px';
+        buttonContainer.style.marginTop = '15px';
+        
+        buttonContainer.innerHTML = `
+          <button type="button" class="btn" id="confirmSaveCalculation">
+            <i class='bx bx-save'></i> Guardar como ingreso
+          </button>
+          <button type="button" class="btn danger" id="clearCalculation">
+            <i class='bx bx-trash'></i> Eliminar cálculo
+          </button>
+        `;
+        
+        // Reemplazar el botón anterior
+        const existingContainer = document.querySelector('.calculation-actions');
+        if (existingContainer) {
+          existingContainer.remove();
+        }
+        
+        saveButton.parentNode.insertBefore(buttonContainer, saveButton);
+        saveButton.style.display = 'none';
+        
+        // Event listeners para los nuevos botones
+        document.getElementById('confirmSaveCalculation').addEventListener('click', saveCalculationAsIncome);
+        document.getElementById('clearCalculation').addEventListener('click', clearCurrentCalculation);
+      }
+    }
+
+    async function saveCalculationAsIncome() {
+      if (!currentCalculation) {
+        alert('No hay cálculo para guardar');
+        return;
+      }
+
       try {
         const res = await apiFetch("/entries", {
           method: "POST",
           body: {
             type: "INCOME",
-            amount: parseFloat(salePrice),
-            note: "Venta de producto artesanal",
+            amount: parseFloat(currentCalculation.salePrice),
+            note: "Venta de producto artesanal (calculado)",
             category: "ventas"
           },
         });
@@ -617,13 +669,35 @@ if (document.getElementById("entryForm")) {
         if (res.success) {
           alert("¡Precio guardado como ingreso!");
           loadData();
+          clearCurrentCalculation();
         } else {
           alert("Error al guardar");
         }
       } catch (error) {
         alert("Error de conexión: " + error.message);
       }
-    });
+    }
+
+    function clearCurrentCalculation() {
+      currentCalculation = null;
+      document.getElementById('priceResult').style.display = 'none';
+      
+      // Restaurar botón original
+      const saveButton = document.getElementById('saveAsIncome');
+      const buttonContainer = document.querySelector('.calculation-actions');
+      
+      if (buttonContainer) {
+        buttonContainer.remove();
+      }
+      
+      if (saveButton) {
+        saveButton.style.display = 'inline-flex';
+      }
+      
+      // Limpiar formulario
+      priceCalculatorForm.reset();
+      document.getElementById('profitMarginInput').value = '30';
+    }
   }
 
   // SISTEMA DE RECORDATORIOS PERSONALES - COMPLETAMENTE REDISEÑADO
@@ -733,6 +807,84 @@ if (document.getElementById("entryForm")) {
     displayUserReminders();
   }
 
+  // NAVBAR MÓVIL - ESTILO TWITTER
+  function initializeMobileNavbar() {
+    const mobileNavbar = document.createElement('nav');
+    mobileNavbar.className = 'mobile-navbar';
+    mobileNavbar.innerHTML = `
+      <ul class="mobile-nav-menu">
+        <li class="mobile-nav-item">
+          <a href="#" class="mobile-nav-link" data-section="dashboard">
+            <i class='bx bx-home-alt mobile-nav-icon'></i>
+            <span class="mobile-nav-text">Inicio</span>
+          </a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#" class="mobile-nav-link" data-section="calculator">
+            <i class='bx bx-calculator mobile-nav-icon'></i>
+            <span class="mobile-nav-text">Calcular</span>
+          </a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#" class="mobile-nav-link" data-section="reminders">
+            <i class='bx bx-bell mobile-nav-icon'></i>
+            <span class="mobile-nav-text">Recordatorios</span>
+            <span class="notification-badge" id="notificationCount">0</span>
+          </a>
+        </li>
+        <li class="mobile-nav-item">
+          <a href="#" class="mobile-nav-link" data-section="account">
+            <i class='bx bx-user mobile-nav-icon'></i>
+            <span class="mobile-nav-text">Cuenta</span>
+          </a>
+        </li>
+      </ul>
+    `;
+    
+    document.body.appendChild(mobileNavbar);
+    
+    // Event listeners para el navbar móvil
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const section = this.getAttribute('data-section');
+        
+        // Remover activo de todos
+        document.querySelectorAll('.mobile-nav-link').forEach(l => l.classList.remove('active'));
+        document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        
+        // Activar actual
+        this.classList.add('active');
+        const sectionElement = document.getElementById(section + 'Section');
+        if (sectionElement) {
+          sectionElement.classList.add('active');
+        }
+        
+        // También activar el item del sidebar si existe
+        const sidebarItem = document.querySelector(`.menu-item[data-section="${section}"]`);
+        if (sidebarItem) {
+          sidebarItem.classList.add('active');
+        }
+      });
+    });
+    
+    // Actualizar badge de notificaciones
+    function updateNotificationBadge() {
+      const userReminders = JSON.parse(localStorage.getItem('userReminders')) || [];
+      const highPriorityCount = userReminders.filter(r => r.priority === 'high').length;
+      const badge = document.getElementById('notificationCount');
+      if (badge) {
+        badge.textContent = highPriorityCount > 0 ? highPriorityCount : '';
+        badge.style.display = highPriorityCount > 0 ? 'flex' : 'none';
+      }
+    }
+    
+    // Actualizar badge cuando se carguen recordatorios
+    window.updateNotificationBadge = updateNotificationBadge;
+    updateNotificationBadge();
+  }
+
   // INFORMACIÓN DE CUENTA - Solo si existe
   function loadAccountInfo() {
     try {
@@ -757,6 +909,8 @@ if (document.getElementById("entryForm")) {
     }
   }
 
+  // Inicializar navbar móvil
+  initializeMobileNavbar();
   loadAccountInfo();
 }
 

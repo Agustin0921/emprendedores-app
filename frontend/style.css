@@ -62,7 +62,9 @@ body {
   font-weight: 500;
   transition: all 0.3s ease;
   text-decoration: none;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.95rem;
 }
 
@@ -116,6 +118,9 @@ body {
   border-bottom: 3px solid var(--cyan);
   padding-bottom: 10px;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* GRID */
@@ -135,7 +140,9 @@ body {
 }
 
 .form-group label {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 6px;
   font-weight: 500;
   color: var(--black);
@@ -251,6 +258,9 @@ input:focus, select:focus {
 .income-section h4 {
   color: var(--cyan);
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 /* SECCIÓN EGRESOS - MAGENTA */
@@ -261,6 +271,9 @@ input:focus, select:focus {
 .expense-section h4 {
   color: var(--magenta);
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .entries-list {
@@ -304,9 +317,10 @@ input:focus, select:focus {
   color: #9ca3af;
 }
 
-.empty-state div:first-child {
+.empty-state i {
   font-size: 2rem;
   margin-bottom: 8px;
+  display: block;
 }
 
 .empty-state p {
@@ -571,6 +585,9 @@ input:focus, select:focus {
   margin: 0;
   border: none;
   padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .sidebar-menu {
@@ -584,6 +601,9 @@ input:focus, select:focus {
   cursor: pointer;
   transition: all 0.3s ease;
   border-left: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .menu-item:hover {
@@ -640,6 +660,14 @@ input:focus, select:focus {
   padding: 10px 20px;
   text-align: center;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.carousel-item::before {
+  content: "📌";
 }
 
 .carousel-btn {
@@ -654,6 +682,9 @@ input:focus, select:focus {
   border-radius: 50%;
   font-size: 18px;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .carousel-btn:hover {
@@ -741,6 +772,13 @@ input:focus, select:focus {
 
 .reminder-content {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reminder-content::before {
+  content: "📝";
 }
 
 .reminder-priority {
@@ -762,12 +800,16 @@ input:focus, select:focus {
   padding: 15px;
   background: var(--gray-light);
   border-radius: 8px;
+  display: flex;
+  flex-direction: column;
 }
 
 .info-item .label {
   font-weight: 500;
   color: var(--black);
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin-bottom: 5px;
 }
 
@@ -890,6 +932,9 @@ input:focus, select:focus {
   cursor: pointer;
   transition: all 0.3s ease;
   border-left: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .menu-item:hover {
@@ -1149,10 +1194,6 @@ input:focus, select:focus {
   gap: 8px;
 }
 
-.sidebar-header h3::before {
-  content: "📊";
-}
-
 .sidebar-menu {
   list-style: none;
   padding: 0;
@@ -1182,23 +1223,6 @@ input:focus, select:focus {
 
 .menu-item span {
   font-weight: 500;
-}
-
-/* Iconos del sidebar usando pseudo-elementos */
-.menu-item[data-section="dashboard"]::before {
-  content: "🏠";
-}
-
-.menu-item[data-section="calculator"]::before {
-  content: "🧮";
-}
-
-.menu-item[data-section="reminders"]::before {
-  content: "🔔";
-}
-
-.menu-item[data-section="account"]::before {
-  content: "👤";
 }
 
 /* CONTENIDO PRINCIPAL */
@@ -1251,8 +1275,8 @@ input:focus, select:focus {
   gap: 8px;
 }
 
-.carousel-item::before {
-  content: "📌";
+.carousel-item i {
+  font-size: 1.2rem;
 }
 
 .carousel-btn {
@@ -1268,6 +1292,9 @@ input:focus, select:focus {
   font-size: 16px;
   transition: all 0.3s ease;
   z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .carousel-btn:hover {
@@ -1370,8 +1397,8 @@ input:focus, select:focus {
   gap: 10px;
 }
 
-.reminder-content::before {
-  content: "📝";
+.reminder-content i {
+  font-size: 1.1rem;
 }
 
 .reminder-priority {
@@ -1414,17 +1441,14 @@ input:focus, select:focus {
   padding-left: 50px;
 }
 
-.info-item::before {
+.info-item i {
   position: absolute;
   left: 15px;
   top: 50%;
   transform: translateY(-50%);
   font-size: 1.2rem;
+  color: var(--cyan);
 }
-
-.info-item:nth-child(1)::before { content: "👤"; }
-.info-item:nth-child(2)::before { content: "📧"; }
-.info-item:nth-child(3)::before { content: "📅"; }
 
 .info-item .label {
   font-weight: 500;

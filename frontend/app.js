@@ -451,190 +451,221 @@ if (document.getElementById("entryForm")) {
   });
 
   loadData();
-}
 
-// ====================
-  // NUEVAS FUNCIONALIDADES
+  // ====================
+  // NUEVAS FUNCIONALIDADES (CON VERIFICACIONES)
   // ====================
 
-  // NAVEGACIÓN DEL SIDEBAR
-  document.querySelectorAll('.menu-item').forEach(item => {
-    item.addEventListener('click', function() {
-      const section = this.getAttribute('data-section');
-      
-      // Remover activo de todos
-      document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
-      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-      
-      // Activar actual
-      this.classList.add('active');
-      document.getElementById(section + 'Section').classList.add('active');
+  // NAVEGACIÓN DEL SIDEBAR - Solo si existe
+  if (document.querySelector('.menu-item')) {
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const section = this.getAttribute('data-section');
+        
+        // Remover activo de todos
+        document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        
+        // Activar actual
+        this.classList.add('active');
+        const sectionElement = document.getElementById(section + 'Section');
+        if (sectionElement) {
+          sectionElement.classList.add('active');
+        }
+      });
     });
-  });
+  }
 
-  // CARRUSEL DE RECORDATORIOS
-  let currentSlide = 0;
+  // CARRUSEL DE RECORDATORIOS - Solo si existe
   const carouselTrack = document.getElementById('carouselTrack');
-  const defaultReminders = [
-    "📅 Revisa tu inventario regularmente",
-    "💰 Actualiza tus precios según costos",
-    "📊 Analiza tus métricas mensuales",
-    "🎯 Establece metas realistas"
-  ];
+  if (carouselTrack) {
+    let currentSlide = 0;
+    const defaultReminders = [
+      "📅 Revisa tu inventario regularmente",
+      "💰 Actualiza tus precios según costos",
+      "📊 Analiza tus métricas mensuales",
+      "🎯 Establece metas realistas"
+    ];
 
-  function initializeCarousel() {
-    defaultReminders.forEach(reminder => {
-      const item = document.createElement('div');
-      item.className = 'carousel-item';
-      item.textContent = reminder;
-      carouselTrack.appendChild(item);
+    function initializeCarousel() {
+      defaultReminders.forEach(reminder => {
+        const item = document.createElement('div');
+        item.className = 'carousel-item';
+        item.textContent = reminder;
+        carouselTrack.appendChild(item);
+      });
+    }
+
+    function showSlide(index) {
+      const slides = document.querySelectorAll('.carousel-item');
+      if (slides.length === 0) return;
+      
+      currentSlide = (index + slides.length) % slides.length;
+      carouselTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+
+    const carouselPrev = document.getElementById('carouselPrev');
+    const carouselNext = document.getElementById('carouselNext');
+    
+    if (carouselPrev) {
+      carouselPrev.addEventListener('click', () => {
+        showSlide(currentSlide - 1);
+      });
+    }
+
+    if (carouselNext) {
+      carouselNext.addEventListener('click', () => {
+        showSlide(currentSlide + 1);
+      });
+    }
+
+    // AUTO AVANCE DEL CARRUSEL
+    setInterval(() => {
+      showSlide(currentSlide + 1);
+    }, 5000);
+
+    initializeCarousel();
+    showSlide(0);
+  }
+
+  // CALCULADORA DE PRECIOS - Solo si existe
+  const priceCalculatorForm = document.getElementById('priceCalculatorForm');
+  if (priceCalculatorForm) {
+    priceCalculatorForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const materialCost = parseFloat(document.getElementById('materialCost').value) || 0;
+      const toolsCost = parseFloat(document.getElementById('toolsCost').value) || 0;
+      const hoursWorked = parseFloat(document.getElementById('hoursWorked').value) || 0;
+      const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
+      const additionalCosts = parseFloat(document.getElementById('additionalCosts').value) || 0;
+      const profitMargin = parseFloat(document.getElementById('profitMarginInput').value) || 0;
+      
+      // Cálculos
+      const laborCost = hoursWorked * hourlyRate;
+      const totalCost = materialCost + toolsCost + laborCost + additionalCosts;
+      const salePrice = totalCost * (1 + profitMargin / 100);
+      const profitAmount = salePrice - totalCost;
+      const finalMargin = (profitAmount / salePrice * 100).toFixed(1);
+      
+      // Mostrar resultados
+      document.getElementById('totalCost').textContent = '$' + totalCost.toFixed(2);
+      document.getElementById('salePrice').textContent = '$' + salePrice.toFixed(2);
+      document.getElementById('profitAmount').textContent = '$' + profitAmount.toFixed(2);
+      document.getElementById('finalMargin').textContent = finalMargin + '%';
+      
+      document.getElementById('priceResult').style.display = 'block';
     });
   }
 
-  function showSlide(index) {
-    const slides = document.querySelectorAll('.carousel-item');
-    if (slides.length === 0) return;
-    
-    currentSlide = (index + slides.length) % slides.length;
-    carouselTrack.style.transform = `translateX(-${currentSlide * 100}%)`;
-  }
+  // GUARDAR COMO INGRESO - Solo si existe
+  const saveAsIncome = document.getElementById('saveAsIncome');
+  if (saveAsIncome) {
+    saveAsIncome.addEventListener('click', async function() {
+      const salePrice = document.getElementById('salePrice').textContent.replace('$', '');
+      
+      try {
+        const res = await apiFetch("/entries", {
+          method: "POST",
+          body: {
+            type: "INCOME",
+            amount: parseFloat(salePrice),
+            note: "Venta de producto artesanal",
+            category: "ventas"
+          },
+        });
 
-  document.getElementById('carouselPrev').addEventListener('click', () => {
-    showSlide(currentSlide - 1);
-  });
-
-  document.getElementById('carouselNext').addEventListener('click', () => {
-    showSlide(currentSlide + 1);
-  });
-
-  // AUTO AVANCE DEL CARRUSEL
-  setInterval(() => {
-    showSlide(currentSlide + 1);
-  }, 5000);
-
-  // CALCULADORA DE PRECIOS
-  document.getElementById('priceCalculatorForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const materialCost = parseFloat(document.getElementById('materialCost').value) || 0;
-    const toolsCost = parseFloat(document.getElementById('toolsCost').value) || 0;
-    const hoursWorked = parseFloat(document.getElementById('hoursWorked').value) || 0;
-    const hourlyRate = parseFloat(document.getElementById('hourlyRate').value) || 0;
-    const additionalCosts = parseFloat(document.getElementById('additionalCosts').value) || 0;
-    const profitMargin = parseFloat(document.getElementById('profitMarginInput').value) || 0;
-    
-    // Cálculos
-    const laborCost = hoursWorked * hourlyRate;
-    const totalCost = materialCost + toolsCost + laborCost + additionalCosts;
-    const salePrice = totalCost * (1 + profitMargin / 100);
-    const profitAmount = salePrice - totalCost;
-    const finalMargin = (profitAmount / salePrice * 100).toFixed(1);
-    
-    // Mostrar resultados
-    document.getElementById('totalCost').textContent = '$' + totalCost.toFixed(2);
-    document.getElementById('salePrice').textContent = '$' + salePrice.toFixed(2);
-    document.getElementById('profitAmount').textContent = '$' + profitAmount.toFixed(2);
-    document.getElementById('finalMargin').textContent = finalMargin + '%';
-    
-    document.getElementById('priceResult').style.display = 'block';
-  });
-
-  // GUARDAR COMO INGRESO - CORREGIDO (faltaba async)
-  document.getElementById('saveAsIncome').addEventListener('click', async function() {
-    const salePrice = document.getElementById('salePrice').textContent.replace('$', '');
-    
-    try {
-      const res = await apiFetch("/entries", {
-        method: "POST",
-        body: {
-          type: "INCOME",
-          amount: parseFloat(salePrice),
-          note: "Venta de producto artesanal",
-          category: "ventas"
-        },
-      });
-
-      if (res.success) {
-        alert("¡Precio guardado como ingreso!");
-        loadData();
-      } else {
-        alert("Error al guardar");
+        if (res.success) {
+          alert("¡Precio guardado como ingreso!");
+          loadData();
+        } else {
+          alert("Error al guardar");
+        }
+      } catch (error) {
+        alert("Error de conexión: " + error.message);
       }
-    } catch (error) {
-      alert("Error de conexión: " + error.message);
-    }
-  });
-
-  // SISTEMA DE RECORDATORIOS PERSONALES
-  let userReminders = JSON.parse(localStorage.getItem('userReminders')) || [];
-
-  function displayUserReminders() {
-    const list = document.getElementById('userRemindersList');
-    list.innerHTML = '';
-    
-    if (userReminders.length === 0) {
-      list.innerHTML = '<div class="empty-state"><div>🔔</div><p>No tienes recordatorios</p></div>';
-      return;
-    }
-    
-    userReminders.forEach((reminder, index) => {
-      const item = document.createElement('div');
-      item.className = `reminder-item ${reminder.priority}`;
-      item.innerHTML = `
-        <div class="reminder-content">
-          <strong>${reminder.text}</strong>
-          <div class="reminder-priority">${reminder.priority}</div>
-        </div>
-        <button class="deleteBtn" data-index="${index}">🗑</button>
-      `;
-      list.appendChild(item);
-    });
-    
-    // Event listeners para eliminar
-    document.querySelectorAll('#userRemindersList .deleteBtn').forEach(btn => {
-      btn.addEventListener('click', function() {
-        const index = parseInt(this.getAttribute('data-index'));
-        userReminders.splice(index, 1);
-        localStorage.setItem('userReminders', JSON.stringify(userReminders));
-        displayUserReminders();
-      });
     });
   }
 
-  document.getElementById('reminderForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    const text = document.getElementById('reminderText').value;
-    const priority = document.getElementById('reminderPriority').value;
-    
-    userReminders.push({
-      text: text,
-      priority: priority,
-      createdAt: new Date().toISOString()
-    });
-    
-    localStorage.setItem('userReminders', JSON.stringify(userReminders));
-    displayUserReminders();
-    this.reset();
-  });
+  // SISTEMA DE RECORDATORIOS PERSONALES - Solo si existe
+  const reminderForm = document.getElementById('reminderForm');
+  if (reminderForm) {
+    let userReminders = JSON.parse(localStorage.getItem('userReminders')) || [];
 
-  // INFORMACIÓN DE CUENTA
+    function displayUserReminders() {
+      const list = document.getElementById('userRemindersList');
+      if (!list) return;
+      
+      list.innerHTML = '';
+      
+      if (userReminders.length === 0) {
+        list.innerHTML = '<div class="empty-state"><div>🔔</div><p>No tienes recordatorios</p></div>';
+        return;
+      }
+      
+      userReminders.forEach((reminder, index) => {
+        const item = document.createElement('div');
+        item.className = `reminder-item ${reminder.priority}`;
+        item.innerHTML = `
+          <div class="reminder-content">
+            <strong>${reminder.text}</strong>
+            <div class="reminder-priority">${reminder.priority}</div>
+          </div>
+          <button class="deleteBtn" data-index="${index}">🗑</button>
+        `;
+        list.appendChild(item);
+      });
+      
+      // Event listeners para eliminar
+      document.querySelectorAll('#userRemindersList .deleteBtn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const index = parseInt(this.getAttribute('data-index'));
+          userReminders.splice(index, 1);
+          localStorage.setItem('userReminders', JSON.stringify(userReminders));
+          displayUserReminders();
+        });
+      });
+    }
+
+    reminderForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const text = document.getElementById('reminderText').value;
+      const priority = document.getElementById('reminderPriority').value;
+      
+      userReminders.push({
+        text: text,
+        priority: priority,
+        createdAt: new Date().toISOString()
+      });
+      
+      localStorage.setItem('userReminders', JSON.stringify(userReminders));
+      displayUserReminders();
+      this.reset();
+    });
+
+    displayUserReminders();
+  }
+
+  // INFORMACIÓN DE CUENTA - Solo si existe
   function loadAccountInfo() {
     try {
-      const decoded = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
-      document.getElementById('accountUsername').textContent = decoded.username;
-      document.getElementById('accountEmail').textContent = decoded.email;
-      document.getElementById('accountSince').textContent = new Date(decoded.iat * 1000).toLocaleDateString();
+      const accountUsername = document.getElementById('accountUsername');
+      const accountEmail = document.getElementById('accountEmail');
+      const accountSince = document.getElementById('accountSince');
+      
+      if (accountUsername && accountEmail && accountSince) {
+        const decoded = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
+        accountUsername.textContent = decoded.username;
+        accountEmail.textContent = decoded.email;
+        accountSince.textContent = new Date(decoded.iat * 1000).toLocaleDateString();
+      }
     } catch (error) {
       console.error('Error cargando info de cuenta:', error);
     }
   }
 
-  // INICIALIZAR TODO
-  initializeCarousel();
-  showSlide(0);
-  displayUserReminders();
   loadAccountInfo();
-
+}
 
 console.log("app.js cargado");

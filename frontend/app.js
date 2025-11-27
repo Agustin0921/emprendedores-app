@@ -1,8 +1,8 @@
 // API base - ACTUALIZA CON TU URL DE RENDER
 const API_URL = "https://emprendedores-app.onrender.com";
 
-// AUTH helpers
-async function apiFetch(path, opts) {
+// AUTH helpers - CORREGIDO
+async function apiFetch(path, opts = {}) {
   const token = localStorage.getItem("token");
   const headers = {
     "Content-Type": "application/json",
@@ -14,10 +14,16 @@ async function apiFetch(path, opts) {
   }
 
   try {
-    const response = await fetch(API_URL + path, {
-      ...opts,
+    const config = {
+      method: opts.method || 'GET',
       headers: headers
-    });
+    };
+
+    if (opts.body) {
+      config.body = JSON.stringify(opts.body);
+    }
+
+    const response = await fetch(API_URL + path, config);
     
     if (response.status === 401) {
       localStorage.removeItem("token");
@@ -52,7 +58,7 @@ if (document.getElementById("loginForm")) {
     try {
       const res = await apiFetch("/auth/login", {
         method: "POST",
-        body: JSON.stringify({ email: email, password: password }),
+        body: { email: email, password: password },
       });
 
       if (res.token) {
@@ -86,7 +92,7 @@ if (document.getElementById("registerForm")) {
     try {
       const res = await apiFetch("/auth/register", {
         method: "POST",
-        body: JSON.stringify({ email: email, password: password, username: username }),
+        body: { email: email, password: password, username: username },
       });
 
       if (res.success) {
@@ -128,97 +134,97 @@ if (document.getElementById("entryForm")) {
   });
 
   async function loadData() {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      window.location.href = "login.html";
-      return;
-    }
-
-    // Cargar datos en paralelo con manejo de errores individual
-    const [entries, items] = await Promise.all([
-      apiFetch("/entries").catch(err => {
-        console.error("Error cargando entries:", err);
-        return [];
-      }),
-      apiFetch("/inventory").catch(err => {
-        console.error("Error cargando inventory:", err);
-        return [];
-      })
-    ]);
-
-    const incomeList = document.getElementById("incomeList");
-    const expenseList = document.getElementById("expenseList");
-    incomeList.innerHTML = "";
-    expenseList.innerHTML = "";
-    let income = 0;
-    let expense = 0;
-      
-    (entries || []).forEach(function(e) {
-      const div = document.createElement("div");
-      div.className = e.type === "INCOME" ? "entry income-entry" : "entry expense-entry";
-      
-      const amountClass = e.type === "INCOME" ? "income-amount" : "expense-amount";
-      
-      div.innerHTML = `
-        <div>
-          <strong>${e.note || "Sin descripción"}</strong>
-          <br>
-          <small>${new Date(e.created_at).toLocaleDateString()}</small>
-        </div>
-        <div class="entry-amount ${amountClass}">
-          ${e.type === "INCOME" ? '+' : '-'}$${Number(e.amount).toFixed(2)}
-        </div>
-      `;
-    
-      if (e.type === "INCOME") {
-        income += Number(e.amount);
-        incomeList.appendChild(div);
-      } else {
-        expense += Number(e.amount);
-        expenseList.appendChild(div);
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        window.location.href = "login.html";
+        return;
       }
-    });
 
-    document.getElementById("totalIncome").textContent = income.toFixed(2);
-    document.getElementById("totalExpenses").textContent = expense.toFixed(2);
-    document.getElementById("balance").textContent = (income - expense).toFixed(2);
+      // Cargar datos en paralelo con manejo de errores individual
+      const [entries, items] = await Promise.all([
+        apiFetch("/entries", {}).catch(err => {
+          console.error("Error cargando entries:", err);
+          return [];
+        }),
+        apiFetch("/inventory", {}).catch(err => {
+          console.error("Error cargando inventory:", err);
+          return [];
+        })
+      ]);
 
-    const invList = document.getElementById("inventoryList");
-    invList.innerHTML = "";
-
-    (items || []).forEach(function(it) {
-      const div = document.createElement("div");
-      div.className = "item";
-      div.innerHTML = '<div>' + it.name + ' x' + it.qty + '</div><div>$' + Number(it.price).toFixed(2) + '<button class="deleteBtn" data-id="' + it.id + '">🗑</button></div>';
-      invList.appendChild(div);
-    });
-
-    document.querySelectorAll(".deleteBtn").forEach(function(btn) {
-      btn.addEventListener("click", async function() {
-        const id = btn.getAttribute("data-id");
-        if (!confirm("¿Eliminar este producto?")) return;
-
-        try {
-          const res = await apiFetch("/inventory/" + id, { method: "DELETE" });
-          if (res.success) loadData();
-          else alert("Error al eliminar producto");
-        } catch (error) {
-          alert("Error de conexión al eliminar producto");
+      const incomeList = document.getElementById("incomeList");
+      const expenseList = document.getElementById("expenseList");
+      incomeList.innerHTML = "";
+      expenseList.innerHTML = "";
+      let income = 0;
+      let expense = 0;
+        
+      (entries || []).forEach(function(e) {
+        const div = document.createElement("div");
+        div.className = e.type === "INCOME" ? "entry income-entry" : "entry expense-entry";
+        
+        const amountClass = e.type === "INCOME" ? "income-amount" : "expense-amount";
+        
+        div.innerHTML = `
+          <div>
+            <strong>${e.note || "Sin descripción"}</strong>
+            <br>
+            <small>${new Date(e.created_at).toLocaleDateString()}</small>
+          </div>
+          <div class="entry-amount ${amountClass}">
+            ${e.type === "INCOME" ? '+' : '-'}$${Number(e.amount).toFixed(2)}
+          </div>
+        `;
+      
+        if (e.type === "INCOME") {
+          income += Number(e.amount);
+          incomeList.appendChild(div);
+        } else {
+          expense += Number(e.amount);
+          expenseList.appendChild(div);
         }
       });
-    });
 
-  } catch (error) {
-    console.error("Error cargando datos:", error);
-    if (error.message.includes("401") || error.message.includes("Token") || error.message.includes("autorizado")) {
-      localStorage.removeItem("token");
-      window.location.href = "login.html";
-    } else {
-      alert("Error cargando datos: " + error.message);
+      document.getElementById("totalIncome").textContent = income.toFixed(2);
+      document.getElementById("totalExpenses").textContent = expense.toFixed(2);
+      document.getElementById("balance").textContent = (income - expense).toFixed(2);
+
+      const invList = document.getElementById("inventoryList");
+      invList.innerHTML = "";
+
+      (items || []).forEach(function(it) {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = '<div>' + it.name + ' x' + it.qty + '</div><div>$' + Number(it.price).toFixed(2) + '<button class="deleteBtn" data-id="' + it.id + '">🗑</button></div>';
+        invList.appendChild(div);
+      });
+
+      document.querySelectorAll(".deleteBtn").forEach(function(btn) {
+        btn.addEventListener("click", async function() {
+          const id = btn.getAttribute("data-id");
+          if (!confirm("¿Eliminar este producto?")) return;
+
+          try {
+            const res = await apiFetch("/inventory/" + id, { method: "DELETE" });
+            if (res.success) loadData();
+            else alert("Error al eliminar producto");
+          } catch (error) {
+            alert("Error de conexión al eliminar producto");
+          }
+        });
+      });
+
+    } catch (error) {
+      console.error("Error cargando datos:", error);
+      if (error.message.includes("401") || error.message.includes("Token") || error.message.includes("autorizado")) {
+        localStorage.removeItem("token");
+        window.location.href = "login.html";
+      } else {
+        alert("Error cargando datos: " + error.message);
+      }
     }
   }
-}
 
   document.getElementById("entryForm").addEventListener("submit", async function(e) {
     e.preventDefault();
@@ -229,7 +235,7 @@ if (document.getElementById("entryForm")) {
     try {
       const res = await apiFetch("/entries", {
         method: "POST",
-        body: JSON.stringify({ type: type, amount: amount, note: note }),
+        body: { type: type, amount: amount, note: note },
       });
 
       if (res.success) {
@@ -252,7 +258,7 @@ if (document.getElementById("entryForm")) {
     try {
       const res = await apiFetch("/inventory", {
         method: "POST",
-        body: JSON.stringify({ name: name, qty: qty, price: price }),
+        body: { name: name, qty: qty, price: price },
       });
 
       if (res.success) {
@@ -286,11 +292,11 @@ if (document.getElementById("entryForm")) {
     try {
       const res = await apiFetch("/entries", {
         method: "POST",
-        body: JSON.stringify({
+        body: {
           type: "INCOME",
           amount: Number(val),
           note: "Calculadora",
-        }),
+        },
       });
 
       if (res.success) loadData();

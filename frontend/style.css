@@ -2,8 +2,11 @@
   --bg: #f8fafc;
   --card: #ffffff;
   --cyan: #06b6d4;
+  --cyan-light: #22d3ee;
   --magenta: #ec4899;
+  --magenta-light: #f472b6;
   --yellow: #eab308;
+  --yellow-light: #facc15;
   --black: #111827;
   --white: #ffffff;
   --success: #16a34a;
@@ -31,15 +34,15 @@ body {
   padding: 20px;
 }
 
-/* HEADER CON GRADIENTE CÍAN-MAGENTA */
+/* HEADER CON COLOR CÍAN */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
-  background: linear-gradient(135deg, var(--cyan), var(--magenta));
+  background: var(--cyan);
   color: var(--white);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.3);
   margin-bottom: 24px;
 }
 
@@ -48,9 +51,9 @@ body {
   font-weight: 600;
 }
 
-/* BOTONES */
+/* BOTONES PRINCIPALES - MAGENTA */
 .btn {
-  background: linear-gradient(135deg, var(--cyan), var(--magenta));
+  background: var(--magenta);
   color: var(--white);
   padding: 10px 20px;
   border: none;
@@ -63,8 +66,9 @@ body {
 }
 
 .btn:hover {
+  background: var(--magenta-light);
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.3);
+  box-shadow: 0 6px 20px rgba(236, 72, 153, 0.3);
 }
 
 .btn.small {
@@ -72,8 +76,18 @@ body {
   font-size: 0.9rem;
 }
 
+/* BOTÓN SALIR - AMARILLO */
+#logoutBtn {
+  background: var(--yellow);
+}
+
+#logoutBtn:hover {
+  background: var(--yellow-light);
+  box-shadow: 0 6px 20px rgba(234, 179, 8, 0.3);
+}
+
 .btn.danger {
-  background: linear-gradient(135deg, var(--danger), #ef4444);
+  background: var(--danger);
 }
 
 /* CARDS */
@@ -92,6 +106,7 @@ body {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
+/* TÍTULOS DE CARDS CON BORDE CÍAN */
 .card h3 {
   margin-top: 0;
   margin-bottom: 16px;
@@ -112,7 +127,7 @@ body {
   grid-column: 1 / -1;
 }
 
-/* FORMULARIOS */
+/* FORMULARIOS - BORDE CÍAN AL FOCUS */
 input, select {
   width: 100%;
   padding: 12px;
@@ -144,21 +159,23 @@ input:focus, select:focus {
   border-left: 4px solid;
 }
 
+/* SECCIÓN INGRESOS - CÍAN */
 .income-section {
-  border-left-color: var(--success);
+  border-left-color: var(--cyan);
 }
 
 .income-section h4 {
-  color: var(--success);
+  color: var(--cyan);
   margin-bottom: 12px;
 }
 
+/* SECCIÓN EGRESOS - MAGENTA */
 .expense-section {
-  border-left-color: var(--danger);
+  border-left-color: var(--magenta);
 }
 
 .expense-section h4 {
-  color: var(--danger);
+  color: var(--magenta);
   margin-bottom: 12px;
 }
 
@@ -184,12 +201,14 @@ input:focus, select:focus {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* ENTRADAS DE INGRESO - CÍAN */
 .income-entry {
-  border-left: 3px solid var(--success);
+  border-left: 3px solid var(--cyan);
 }
 
+/* ENTRADAS DE EGRESO - MAGENTA */
 .expense-entry {
-  border-left: 3px solid var(--danger);
+  border-left: 3px solid var(--magenta);
 }
 
 .entry-amount {
@@ -198,14 +217,14 @@ input:focus, select:focus {
 }
 
 .income-amount {
-  color: var(--success);
+  color: var(--cyan);
 }
 
 .expense-amount {
-  color: var(--danger);
+  color: var(--magenta);
 }
 
-/* INVENTARIO */
+/* INVENTARIO - AMARILLO */
 #inventoryList {
   max-height: 300px;
   overflow-y: auto;
@@ -226,7 +245,7 @@ input:focus, select:focus {
 
 .item:hover {
   transform: translateX(4px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(234, 179, 8, 0.2);
 }
 
 .deleteBtn {
@@ -246,12 +265,32 @@ input:focus, select:focus {
   transform: scale(1.05);
 }
 
-/* CALCULADORA */
+/* CALCULADORA - RESULTADO EN CÍAN */
 #calcResult {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--cyan);
   margin: 12px 0;
+}
+
+/* BOTÓN CALCULADORA - AMARILLO */
+#calcBtn {
+  background: var(--yellow);
+}
+
+#calcBtn:hover {
+  background: var(--yellow-light);
+  box-shadow: 0 6px 20px rgba(234, 179, 8, 0.3);
+}
+
+/* BOTÓN GUARDAR CÁLCULO - CÍAN */
+#saveCalc {
+  background: var(--cyan);
+}
+
+#saveCalc:hover {
+  background: var(--cyan-light);
+  box-shadow: 0 6px 20px rgba(6, 182, 212, 0.3);
 }
 
 /* LOGIN & REGISTER */
@@ -261,6 +300,7 @@ input:focus, select:focus {
   text-align: center;
 }
 
+/* TÍTULOS LOGIN/REGISTER - CÍAN */
 .login-card h1, .register-card h1 {
   color: var(--cyan);
   margin-bottom: 24px;
@@ -273,7 +313,19 @@ input:focus, select:focus {
 }
 
 .login-card a:hover, .register-card a:hover {
+  color: var(--cyan-light);
   text-decoration: underline;
+}
+
+/* BOTÓN LOGIN/REGISTER - MAGENTA */
+.login-card .btn, .register-card .btn {
+  background: var(--magenta);
+  width: 100%;
+  margin-top: 16px;
+}
+
+.login-card .btn:hover, .register-card .btn:hover {
+  background: var(--magenta-light);
 }
 
 /* RESPONSIVE */

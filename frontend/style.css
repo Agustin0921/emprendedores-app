@@ -182,6 +182,34 @@ input:focus, select:focus {
 .entries-list {
   max-height: 300px;
   overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* SCROLLBAR PERSONALIZADA */
+.entries-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.entries-list::-webkit-scrollbar-track {
+  background: var(--gray-light);
+  border-radius: 3px;
+}
+
+.entries-list::-webkit-scrollbar-thumb {
+  background: var(--cyan);
+  border-radius: 3px;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.entries-list:hover::-webkit-scrollbar-thumb {
+  opacity: 1;
+}
+
+/* Para Firefox */
+.entries-list {
+  scrollbar-width: thin;
+  scrollbar-color: var(--cyan) var(--gray-light);
 }
 
 .entry {
@@ -199,6 +227,7 @@ input:focus, select:focus {
 .entry:hover {
   transform: translateX(4px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-right: 2px;
 }
 
 /* ENTRADAS DE INGRESO - CÍAN */
@@ -224,11 +253,56 @@ input:focus, select:focus {
   color: var(--magenta);
 }
 
+/* Botón eliminar para entries */
+.deleteEntryBtn {
+  background: var(--danger);
+  color: var(--white);
+  border: none;
+  padding: 4px 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  margin-left: 8px;
+}
+
+.deleteEntryBtn:hover {
+  background: #b91c1c;
+  transform: scale(1.1);
+}
+
 /* INVENTARIO - AMARILLO */
 #inventoryList {
   max-height: 300px;
   overflow-y: auto;
   margin-top: 16px;
+  padding-right: 4px;
+}
+
+/* Scrollbar para inventario */
+#inventoryList::-webkit-scrollbar {
+  width: 6px;
+}
+
+#inventoryList::-webkit-scrollbar-track {
+  background: var(--gray-light);
+  border-radius: 3px;
+}
+
+#inventoryList::-webkit-scrollbar-thumb {
+  background: var(--yellow);
+  border-radius: 3px;
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+#inventoryList:hover::-webkit-scrollbar-thumb {
+  opacity: 1;
+}
+
+#inventoryList {
+  scrollbar-width: thin;
+  scrollbar-color: var(--yellow) var(--gray-light);
 }
 
 .item {
@@ -241,11 +315,13 @@ input:focus, select:focus {
   margin-bottom: 8px;
   border-radius: 6px;
   border-left: 3px solid var(--yellow);
+  transition: all 0.3s ease;
 }
 
 .item:hover {
   transform: translateX(4px);
   box-shadow: 0 2px 8px rgba(234, 179, 8, 0.2);
+  margin-right: 2px;
 }
 
 .deleteBtn {
@@ -344,5 +420,19 @@ input:focus, select:focus {
   
   .card {
     padding: 16px;
+  }
+  
+  .entry, .item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .entry > div:last-child, .item > div:last-child {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    justify-content: space-between;
   }
 }

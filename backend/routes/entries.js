@@ -57,4 +57,18 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
+// ELIMINAR ENTRY
+router.delete("/:id", auth, async (req, res) => {
+  try {
+    await db.query(
+      "DELETE FROM entries WHERE id = $1 AND user_id = $2",
+      [req.params.id, req.user.id]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error eliminando entry:", err);
+    res.status(500).json({ error: "No se pudo eliminar la entrada" });
+  }
+});
+
 module.exports = router;

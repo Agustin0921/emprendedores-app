@@ -163,20 +163,23 @@ if (document.getElementById("entryForm")) {
       (entries || []).forEach(function(e) {
         const div = document.createElement("div");
         div.className = e.type === "INCOME" ? "entry income-entry" : "entry expense-entry";
-        
+
         const amountClass = e.type === "INCOME" ? "income-amount" : "expense-amount";
-        
+
         div.innerHTML = `
           <div>
             <strong>${e.note || "Sin descripción"}</strong>
             <br>
             <small>${new Date(e.created_at).toLocaleDateString()}</small>
           </div>
-          <div class="entry-amount ${amountClass}">
-            ${e.type === "INCOME" ? '+' : '-'}$${Number(e.amount).toFixed(2)}
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div class="entry-amount ${amountClass}">
+              ${e.type === "INCOME" ? '+' : '-'}$${Number(e.amount).toFixed(2)}
+            </div>
+            <button class="deleteEntryBtn" data-id="${e.id}" data-type="${e.type}">🗑</button>
           </div>
         `;
-      
+
         if (e.type === "INCOME") {
           income += Number(e.amount);
           incomeList.appendChild(div);
@@ -185,6 +188,27 @@ if (document.getElementById("entryForm")) {
           expenseList.appendChild(div);
         }
       });
+
+      document.querySelectorAll(".deleteEntryBtn").forEach(function(btn) {
+      btn.addEventListener("click", async function() {
+        const id = btn.getAttribute("data-id");
+        const type = btn.getAttribute("data-type");
+        const typeText = type === "INCOME" ? "ingreso" : "egreso";
+        
+        if (!confirm(`¿Eliminar este ${typeText}?`)) return;
+
+        try {
+          const res = await apiFetch("/entries/" + id, { method: "DELETE" });
+          if (res.success) {
+            loadData();
+          } else {
+            alert("Error al eliminar entrada");
+          }
+        } catch (error) {
+          alert("Error de conexión al eliminar entrada");
+        }
+      });
+    });
 
       document.getElementById("totalIncome").textContent = income.toFixed(2);
       document.getElementById("totalExpenses").textContent = expense.toFixed(2);

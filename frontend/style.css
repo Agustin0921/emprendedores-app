@@ -1055,7 +1055,7 @@ input:focus, select:focus {
   /* Recordatorios alta prioridad en móvil */
   .reminder-item.high {
     margin: 10px auto;
-    max-width: 95%;
+    max-width: 100%;
   }
   
   .reminder-item.high::before {

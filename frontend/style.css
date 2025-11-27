@@ -251,6 +251,10 @@ input:focus, select:focus {
 
 /* Estilos simples para recordatorios en el carrusel */
 .carousel-item.high-priority {
+  background-color: var(--magenta-pastel);
+  border: 1px solid var(--magenta);
+  border-left: 15px solid var(--magenta);
+  border-right: 15px solid var(--magenta);
   color: var(--magenta);
   font-weight: 600;
 }
@@ -507,7 +511,7 @@ input:focus, select:focus {
   border-left: 6px solid var(--magenta);
   background: linear-gradient(135deg, var(--magenta-pastel) 0%, var(--white) 100%);
   box-shadow: 0 4px 15px rgba(219, 39, 119, 0.15);
-  max-width: 90%;
+  max-width: 100%;
   position: relative;
   padding-top: 24px;
 }

@@ -210,7 +210,7 @@ input:focus, select:focus {
   font-weight: 600;
 }
 
-/* CARRUSEL PROFESIONAL ACTUALIZADO */
+/* CARRUSEL PROFESIONAL - COMPLETAMENTE CORREGIDO */
 .reminders-carousel {
   position: relative;
   background: linear-gradient(135deg, var(--white) 0%, var(--cyan-pastel) 100%);
@@ -251,6 +251,8 @@ input:focus, select:focus {
   font-size: 1rem;
   position: relative;
   color: var(--gray-dark);
+  min-height: 70px;
+  box-sizing: border-box;
 }
 
 /* Estilos específicos para recordatorios de alta prioridad en el carrusel */
@@ -258,13 +260,13 @@ input:focus, select:focus {
   background: linear-gradient(135deg, var(--magenta-pastel), var(--white));
   border: 2px solid var(--magenta);
   border-radius: 8px;
-  margin: 0 25%;
+  margin: 0 20%;
   position: relative;
   padding: 14px 30px;
 }
 
 .carousel-item.high-priority::before {
-  content: '❗ ALTA PRIORIDAD';
+  content: '🔴 ALTA PRIORIDAD';
   position: absolute;
   top: -10px;
   left: 50%;
@@ -343,7 +345,7 @@ input:focus, select:focus {
   right: 15px;
 }
 
-/* LISTA DE RECORDATORIOS PERSONALES - COMPLETAMENTE REDISEÑADA */
+/* LISTA DE RECORDATORIOS PERSONALES - (ESTA PARTE ESTÁ BIEN, NO TOCAR) */
 .reminders-list {
   margin-top: 20px;
   max-height: 400px;

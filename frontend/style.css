@@ -334,6 +334,112 @@ input:focus, select:focus {
   transform: scale(1.2);
 }
 
+/* LISTA DE RECORDATORIOS PERSONALES MEJORADA */
+.reminders-list {
+  margin-top: 20px;
+}
+
+.reminder-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--white);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  border-left: 4px solid;
+  transition: all 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  width: 100%;
+}
+
+/* Recordatorios de alta prioridad con margen y destacado */
+.reminder-item.high {
+  margin-left: 25%;
+  margin-right: 25%;
+  border: 2px solid var(--magenta);
+  border-left: 6px solid var(--magenta);
+  background: linear-gradient(135deg, var(--magenta-pastel), var(--white));
+  position: relative;
+  box-shadow: 0 4px 12px rgba(219, 39, 119, 0.15);
+}
+
+.reminder-item.high::before {
+  content: '❗ ALTA PRIORIDAD';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--magenta);
+  color: var(--white);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(219, 39, 119, 0.3);
+}
+
+.reminder-item.high:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(219, 39, 119, 0.2);
+}
+
+.reminder-item.medium {
+  border-left-color: var(--yellow);
+  background: var(--yellow-pastel);
+}
+
+.reminder-item.low {
+  border-left-color: var(--cyan);
+  background: var(--cyan-pastel);
+}
+
+.reminder-item:hover:not(.high) {
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.reminder-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reminder-content i {
+  font-size: 1.1rem;
+}
+
+.reminder-priority {
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: 12px;
+  background: var(--gray-light);
+  margin-left: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+  min-width: 60px;
+  text-align: center;
+}
+
+.reminder-item.low .reminder-priority {
+  background: var(--cyan);
+  color: white;
+}
+
+.reminder-item.medium .reminder-priority {
+  background: var(--yellow);
+  color: var(--black);
+}
+
+.reminder-item.high .reminder-priority {
+  background: var(--magenta);
+  color: white;
+  font-weight: 700;
+}
+
 /* PRESUPUESTOS */
 .budget-item {
   margin-bottom: 16px;
@@ -740,80 +846,6 @@ input:focus, select:focus {
   color: var(--success);
 }
 
-/* LISTA DE RECORDATORIOS PERSONALES */
-.reminders-list {
-  margin-top: 20px;
-}
-
-.reminder-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px;
-  background: var(--white);
-  border-radius: 6px;
-  margin-bottom: 8px;
-  border-left: 4px solid;
-  transition: all 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.reminder-item:hover {
-  transform: translateX(5px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.reminder-item.low {
-  border-left-color: var(--cyan);
-  background: var(--cyan-pastel);
-}
-
-.reminder-item.medium {
-  border-left-color: var(--yellow);
-  background: var(--yellow-pastel);
-}
-
-.reminder-item.high {
-  border-left-color: var(--magenta);
-  background: var(--magenta-pastel);
-}
-
-.reminder-content {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.reminder-content i {
-  font-size: 1.1rem;
-}
-
-.reminder-priority {
-  font-size: 0.7rem;
-  padding: 4px 8px;
-  border-radius: 12px;
-  background: var(--gray-light);
-  margin-left: 10px;
-  text-transform: uppercase;
-  font-weight: 600;
-}
-
-.reminder-item.low .reminder-priority {
-  background: var(--cyan);
-  color: white;
-}
-
-.reminder-item.medium .reminder-priority {
-  background: var(--yellow);
-  color: var(--black);
-}
-
-.reminder-item.high .reminder-priority {
-  background: var(--magenta);
-  color: white;
-}
-
 /* INFORMACIÓN DE CUENTA */
 .account-info {
   display: grid;
@@ -895,6 +927,17 @@ input:focus, select:focus {
   .carousel-item {
     padding: 15px 30px;
     font-size: 0.9rem;
+  }
+  
+  /* Recordatorios alta prioridad en móvil */
+  .reminder-item.high {
+    margin-left: 10%;
+    margin-right: 10%;
+  }
+  
+  .reminder-item.high::before {
+    font-size: 0.6rem;
+    padding: 3px 8px;
   }
   
   .entries-container {

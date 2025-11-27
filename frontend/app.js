@@ -147,19 +147,37 @@ if (document.getElementById("entryForm")) {
       })
     ]);
 
-    const entriesList = document.getElementById("entriesList");
-    entriesList.innerHTML = "";
+    const incomeList = document.getElementById("incomeList");
+    const expenseList = document.getElementById("expenseList");
+    incomeList.innerHTML = "";
+    expenseList.innerHTML = "";
     let income = 0;
     let expense = 0;
-
+      
     (entries || []).forEach(function(e) {
       const div = document.createElement("div");
-      div.className = "entry";
-      div.innerHTML = '<div>' + e.type + ' • ' + (e.note || "") + '</div><div>' + Number(e.amount).toFixed(2) + '</div>';
-      entriesList.appendChild(div);
-
-      if (e.type === "INCOME") income += Number(e.amount);
-      else expense += Number(e.amount);
+      div.className = e.type === "INCOME" ? "entry income-entry" : "entry expense-entry";
+      
+      const amountClass = e.type === "INCOME" ? "income-amount" : "expense-amount";
+      
+      div.innerHTML = `
+        <div>
+          <strong>${e.note || "Sin descripción"}</strong>
+          <br>
+          <small>${new Date(e.created_at).toLocaleDateString()}</small>
+        </div>
+        <div class="entry-amount ${amountClass}">
+          ${e.type === "INCOME" ? '+' : '-'}$${Number(e.amount).toFixed(2)}
+        </div>
+      `;
+    
+      if (e.type === "INCOME") {
+        income += Number(e.amount);
+        incomeList.appendChild(div);
+      } else {
+        expense += Number(e.amount);
+        expenseList.appendChild(div);
+      }
     });
 
     document.getElementById("totalIncome").textContent = income.toFixed(2);

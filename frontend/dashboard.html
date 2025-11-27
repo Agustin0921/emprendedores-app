@@ -14,125 +14,250 @@
 </div>
 </header>
 
-<main class="container grid">
-<!-- SECCIÓN MÉTRICAS DEL NEGOCIO -->
-<section class="card">
-  <h3>📊 Métricas del Negocio</h3>
-  <div class="metrics-grid">
-    <div class="metric">
-      <span class="metric-label">Margen de Ganancia</span>
-      <span class="metric-value" id="profitMargin">0%</span>
-    </div>
-    <div class="metric">
-      <span class="metric-label">Ticket Promedio</span>
-      <span class="metric-value" id="averageTicket">$0</span>
-    </div>
-    <div class="metric">
-      <span class="metric-label">ROI Mensual</span>
-      <span class="metric-value" id="monthlyROI">0%</span>
+<!-- CARRUSEL DE RECORDATORIOS -->
+<div id="remindersCarousel" class="reminders-carousel">
+  <div class="carousel-container">
+    <div class="carousel-track" id="carouselTrack">
+      <!-- Los recordatorios se cargarán aquí con JavaScript -->
     </div>
   </div>
-</section>
-
-<!-- SECCIÓN RECORDATORIOS -->
-<section class="card">
-  <h3>🔔 Recordatorios</h3>
-  <div id="remindersList">
-    <div class="reminder">
-      <span>📅 Revisar stock de productos esta semana</span>
-    </div>
-    <div class="reminder">
-      <span>💰 Analizar gastos del mes</span>
-    </div>
-  </div>
-</section>
-
-<section class="card">
-<h3>Resumen Financiero</h3>
-<p>Total ingresos: <strong id="totalIncome">0</strong></p>
-<p>Total egresos: <strong id="totalExpenses">0</strong></p>
-<p>Balance: <strong id="balance">0</strong></p>
-</section>
-
-<section class="card">
-<h3>Agregar entrada</h3>
-<form id="entryForm">
-  <select id="entryType">
-    <option value="INCOME">Ingreso</option>
-    <option value="EXPENSE">Egreso</option>
-  </select>
-  
-  <!-- Selector de categorías dinámico -->
-  <select id="entryCategory">
-    <option value="">Seleccionar categoría...</option>
-    <!-- Las opciones se llenarán con JavaScript -->
-  </select>
-  
-  <input type="number" id="entryAmount" placeholder="Monto" step="0.01" required />
-  <input type="text" id="entryNote" placeholder="Descripción" required />
-  <button type="submit" class="btn">Agregar</button>
-</form>
-</section>
-
-<section class="card">
-<h3>Inventario</h3>
-<form id="itemForm">
-  <input type="text" id="itemName" placeholder="Nombre del producto" required />
-  <input type="number" id="itemQty" placeholder="Cantidad" required />
-  <input type="number" id="itemPrice" placeholder="Precio unitario" step="0.01" required />
-  <button type="submit" class="btn">Agregar ítem</button>
-</form>
-<div id="inventoryList"></div>
-</section>
-
-<!-- SECCIÓN PRESUPUESTOS -->
-<section class="card">
-  <h3>🎯 Presupuestos Mensuales</h3>
-  <div id="budgetsList">
-    <div class="budget-item">
-      <div class="budget-header">
-        <span>Marketing</span>
-        <span>$0 / $500</span>
-      </div>
-      <div class="budget-bar">
-        <div class="budget-progress" style="width: 0%"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="card">
-<h3>Calculadora rápida</h3>
-<input id="calcExpr" placeholder="ej: 100+50-30" />
-<button id="calcBtn" class="btn">Calcular</button>
-<p>Resultado: <strong id="calcResult">-</strong></p>
-<button id="saveCalc" class="btn">Guardar como ingreso</button>
-</section>
-
-<section class="card wide" id="entriesSection">
-<h3>Entradas - Historial</h3>
-<div class="entries-container">
-  <div class="income-section">
-    <h4>📈 Ingresos</h4>
-    <div id="incomeList" class="entries-list">
-      <div class="empty-state">
-        <div>📊</div>
-        <p>No hay ingresos registrados</p>
-      </div>
-    </div>
-  </div>
-  <div class="expense-section">
-    <h4>📉 Egresos</h4>
-    <div id="expenseList" class="entries-list">
-      <div class="empty-state">
-        <div>💸</div>
-        <p>No hay egresos registrados</p>
-      </div>
-    </div>
-  </div>
+  <button class="carousel-btn prev" id="carouselPrev">‹</button>
+  <button class="carousel-btn next" id="carouselNext">›</button>
 </div>
-</section>
-</main>
+
+<div class="main-container">
+  <!-- NAVBAR LATERAL -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h3>📊 Mi Negocio</h3>
+    </div>
+    <ul class="sidebar-menu">
+      <li class="menu-item active" data-section="dashboard">
+        <span>🏠 Dashboard</span>
+      </li>
+      <li class="menu-item" data-section="calculator">
+        <span>🧮 Calculadora de Precios</span>
+      </li>
+      <li class="menu-item" data-section="reminders">
+        <span>🔔 Mis Recordatorios</span>
+      </li>
+      <li class="menu-item" data-section="account">
+        <span>👤 Mi Cuenta</span>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="content">
+    <!-- SECCIÓN DASHBOARD (por defecto) -->
+    <div id="dashboardSection" class="section active">
+      <div class="container grid">
+        <section class="card">
+          <h3>📊 Métricas del Negocio</h3>
+          <div class="metrics-grid">
+            <div class="metric">
+              <span class="metric-label">Margen de Ganancia</span>
+              <span class="metric-value" id="profitMargin">0%</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Ticket Promedio</span>
+              <span class="metric-value" id="averageTicket">$0</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">ROI Mensual</span>
+              <span class="metric-value" id="monthlyROI">0%</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h3>Resumen Financiero</h3>
+          <p>Total ingresos: <strong id="totalIncome">0</strong></p>
+          <p>Total egresos: <strong id="totalExpenses">0</strong></p>
+          <p>Balance: <strong id="balance">0</strong></p>
+        </section>
+
+        <section class="card">
+          <h3>Agregar entrada</h3>
+          <form id="entryForm">
+            <select id="entryType">
+              <option value="INCOME">Ingreso</option>
+              <option value="EXPENSE">Egreso</option>
+            </select>
+            <select id="entryCategory">
+              <option value="">Seleccionar categoría...</option>
+            </select>
+            <input type="number" id="entryAmount" placeholder="Monto" step="0.01" required />
+            <input type="text" id="entryNote" placeholder="Descripción" required />
+            <button type="submit" class="btn">Agregar</button>
+          </form>
+        </section>
+
+        <section class="card">
+          <h3>Inventario</h3>
+          <form id="itemForm">
+            <input type="text" id="itemName" placeholder="Nombre del producto" required />
+            <input type="number" id="itemQty" placeholder="Cantidad" required />
+            <input type="number" id="itemPrice" placeholder="Precio unitario" step="0.01" required />
+            <button type="submit" class="btn">Agregar ítem</button>
+          </form>
+          <div id="inventoryList"></div>
+        </section>
+
+        <section class="card">
+          <h3>🎯 Presupuestos Mensuales</h3>
+          <div id="budgetsList">
+            <div class="budget-item">
+              <div class="budget-header">
+                <span>Marketing</span>
+                <span>$0 / $500</span>
+              </div>
+              <div class="budget-bar">
+                <div class="budget-progress" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card wide" id="entriesSection">
+          <h3>Entradas - Historial</h3>
+          <div class="entries-container">
+            <div class="income-section">
+              <h4>📈 Ingresos</h4>
+              <div id="incomeList" class="entries-list">
+                <div class="empty-state">
+                  <div>📊</div>
+                  <p>No hay ingresos registrados</p>
+                </div>
+              </div>
+            </div>
+            <div class="expense-section">
+              <h4>📉 Egresos</h4>
+              <div id="expenseList" class="entries-list">
+                <div class="empty-state">
+                  <div>💸</div>
+                  <p>No hay egresos registrados</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- SECCIÓN CALCULADORA DE PRECIOS -->
+    <div id="calculatorSection" class="section">
+      <div class="container">
+        <div class="card wide">
+          <h3>🧮 Calculadora de Precios para Artesanos</h3>
+          <form id="priceCalculatorForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label>Materiales y Suministros</label>
+                <input type="number" id="materialCost" placeholder="Costo de materiales" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <label>Herramientas y Equipamiento</label>
+                <input type="number" id="toolsCost" placeholder="Costo de herramientas" step="0.01">
+              </div>
+              <div class="form-group">
+                <label>Horas trabajadas</label>
+                <input type="number" id="hoursWorked" placeholder="Horas invertidas" step="0.1" required>
+              </div>
+              <div class="form-group">
+                <label>Tarifa por hora deseada</label>
+                <input type="number" id="hourlyRate" placeholder="Tarifa por hora" step="0.01" required>
+              </div>
+              <div class="form-group">
+                <label>Costos adicionales</label>
+                <input type="number" id="additionalCosts" placeholder="Embalaje, transporte, etc." step="0.01">
+              </div>
+              <div class="form-group">
+                <label>Margen de ganancia (%)</label>
+                <input type="number" id="profitMarginInput" placeholder="Ej: 30" step="0.1" value="30" required>
+              </div>
+            </div>
+            <button type="submit" class="btn">Calcular Precio</button>
+          </form>
+          
+          <div id="priceResult" class="price-result" style="display: none;">
+            <h4>💡 Precio Recomendado</h4>
+            <div class="result-grid">
+              <div class="result-item">
+                <span>Costo total:</span>
+                <span id="totalCost">$0</span>
+              </div>
+              <div class="result-item">
+                <span>Precio de venta:</span>
+                <span id="salePrice" class="highlight">$0</span>
+              </div>
+              <div class="result-item">
+                <span>Ganancia:</span>
+                <span id="profitAmount" class="success">$0</span>
+              </div>
+              <div class="result-item">
+                <span>Margen de ganancia:</span>
+                <span id="finalMargin">0%</span>
+              </div>
+            </div>
+            <button id="saveAsIncome" class="btn">Guardar como ingreso</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN RECORDATORIOS -->
+    <div id="remindersSection" class="section">
+      <div class="container">
+        <div class="card wide">
+          <h3>🔔 Mis Recordatorios</h3>
+          <form id="reminderForm">
+            <div class="form-group">
+              <label>Nuevo recordatorio</label>
+              <input type="text" id="reminderText" placeholder="Ej: Revisar stock de materiales..." required>
+            </div>
+            <div class="form-group">
+              <label>Prioridad</label>
+              <select id="reminderPriority">
+                <option value="low">Baja</option>
+                <option value="medium" selected>Media</option>
+                <option value="high">Alta</option>
+              </select>
+            </div>
+            <button type="submit" class="btn">Agregar Recordatorio</button>
+          </form>
+          
+          <div id="userRemindersList" class="reminders-list">
+            <!-- Los recordatorios del usuario se cargarán aquí -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECCIÓN MI CUENTA -->
+    <div id="accountSection" class="section">
+      <div class="container">
+        <div class="card wide">
+          <h3>👤 Mi Cuenta</h3>
+          <div class="account-info">
+            <div class="info-item">
+              <span class="label">Usuario:</span>
+              <span id="accountUsername">-</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Email:</span>
+              <span id="accountEmail">-</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Miembro desde:</span>
+              <span id="accountSince">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
 
 <script src="app.js"></script>
 </body>

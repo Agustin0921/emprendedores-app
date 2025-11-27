@@ -30,12 +30,13 @@ function auth(req, res, next) {
   }
 }
 
+// ACTUALIZAR ESTA RUTA POST PARA INCLUIR CATEGORÍA
 router.post("/", auth, async (req, res) => {
-  const { type, amount, note } = req.body;
+  const { type, amount, note, category } = req.body;
   try {
     await db.query(
-      "INSERT INTO entries (user_id, type, amount, note) VALUES ($1, $2, $3, $4)",
-      [req.user.id, type, amount, note]
+      "INSERT INTO entries (user_id, type, amount, note, category) VALUES ($1, $2, $3, $4, $5)",
+      [req.user.id, type, amount, note, category || '']
     );
     res.json({ success: true });
   } catch (err) {
@@ -44,6 +45,7 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
+// ACTUALIZAR ESTA RUTA GET PARA INCLUIR CATEGORÍA EN LA RESPUESTA
 router.get("/", auth, async (req, res) => {
   try {
     const result = await db.query(

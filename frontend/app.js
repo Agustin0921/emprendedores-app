@@ -238,10 +238,10 @@ if (document.getElementById("entryForm")) {
 
     // Mostrar estados vacíos si no hay datos
     if (incomeEntries.length === 0) {
-      incomeList.innerHTML = '<div class="empty-state"><div>📊</div><p>No hay ingresos registrados</p></div>';
+      incomeList.innerHTML = '<div class="empty-state"><i class="bx bx-line-chart"></i><p>No hay ingresos registrados</p></div>';
     }
     if (expenseEntries.length === 0) {
-      expenseList.innerHTML = '<div class="empty-state"><div>💸</div><p>No hay egresos registrados</p></div>';
+      expenseList.innerHTML = '<div class="empty-state"><i class="bx bx-money"></i><p>No hay egresos registrados</p></div>';
     }
 
     // Mostrar ingresos
@@ -258,7 +258,9 @@ if (document.getElementById("entryForm")) {
           <div class="entry-amount income-amount">
             +$${Number(e.amount).toFixed(2)}
           </div>
-          <button class="deleteEntryBtn" data-id="${e.id}" data-type="${e.type}">🗑</button>
+          <button class="deleteEntryBtn" data-id="${e.id}" data-type="${e.type}">
+            <i class='bx bx-trash'></i>
+          </button>
         </div>
       `;
       incomeList.appendChild(div);
@@ -278,7 +280,9 @@ if (document.getElementById("entryForm")) {
           <div class="entry-amount expense-amount">
             -$${Number(e.amount).toFixed(2)}
           </div>
-          <button class="deleteEntryBtn" data-id="${e.id}" data-type="${e.type}">🗑</button>
+          <button class="deleteEntryBtn" data-id="${e.id}" data-type="${e.type}">
+            <i class='bx bx-trash'></i>
+          </button>
         </div>
       `;
       expenseList.appendChild(div);
@@ -309,7 +313,7 @@ if (document.getElementById("entryForm")) {
     invList.innerHTML = "";
 
     if (items.length === 0) {
-      invList.innerHTML = '<div class="empty-state"><div>📦</div><p>No hay productos en inventario</p></div>';
+      invList.innerHTML = '<div class="empty-state"><i class="bx bx-package"></i><p>No hay productos en inventario</p></div>';
       return;
     }
 
@@ -326,7 +330,9 @@ if (document.getElementById("entryForm")) {
           <div style="font-weight: 600; color: var(--yellow);">
             $${(Number(it.qty) * Number(it.price)).toFixed(2)}
           </div>
-          <button class="deleteBtn" data-id="${it.id}">🗑</button>
+          <button class="deleteBtn" data-id="${it.id}">
+            <i class='bx bx-trash'></i>
+          </button>
         </div>
       `;
       invList.appendChild(div);
@@ -489,7 +495,10 @@ if (document.getElementById("entryForm")) {
       if (userReminders.length === 0) {
         const emptyItem = document.createElement('div');
         emptyItem.className = 'carousel-item';
-        emptyItem.textContent = 'No tienes recordatorios. Agrega algunos en la sección "Mis Recordatorios"';
+        emptyItem.innerHTML = `
+          <i class='bx bx-bell-off'></i>
+          <span>No tienes recordatorios. Agrega algunos en la sección "Mis Recordatorios"</span>
+        `;
         carouselTrack.appendChild(emptyItem);
         return;
       }
@@ -497,10 +506,10 @@ if (document.getElementById("entryForm")) {
       // Mostrar recordatorios del usuario
       userReminders.forEach(reminder => {
         const item = document.createElement('div');
-        item.className = 'carousel-item';
+        item.className = `carousel-item ${reminder.priority === 'high' ? 'high-priority' : ''}`;
         item.innerHTML = `
-          <span class="reminder-priority-badge ${reminder.priority}">${reminder.priority}</span>
-          ${reminder.text}
+          <i class='bx ${reminder.priority === 'high' ? 'bx-error-circle' : 'bx-bell'} ${reminder.priority === 'medium' ? 'bx-alarm' : ''}'></i>
+          <span>${reminder.text}</span>
         `;
         carouselTrack.appendChild(item);
       });
@@ -535,15 +544,17 @@ if (document.getElementById("entryForm")) {
     }, 5000);
 
     // Pausar carrusel al hacer hover
-    carouselTrack.addEventListener('mouseenter', () => {
-      clearInterval(carouselInterval);
-    });
+    if (carouselTrack) {
+      carouselTrack.addEventListener('mouseenter', () => {
+        clearInterval(carouselInterval);
+      });
 
-    carouselTrack.addEventListener('mouseleave', () => {
-      carouselInterval = setInterval(() => {
-        showSlide(currentSlide + 1);
-      }, 5000);
-    });
+      carouselTrack.addEventListener('mouseleave', () => {
+        carouselInterval = setInterval(() => {
+          showSlide(currentSlide + 1);
+        }, 5000);
+      });
+    }
 
     // Función para actualizar el carrusel cuando se agregan nuevos recordatorios
     window.updateCarousel = function() {
@@ -615,7 +626,7 @@ if (document.getElementById("entryForm")) {
     });
   }
 
-  // SISTEMA DE RECORDATORIOS PERSONALES - Solo si existe
+  // SISTEMA DE RECORDATORIOS PERSONALES - COMPLETAMENTE REDISEÑADO
   const reminderForm = document.getElementById('reminderForm');
   if (reminderForm) {
     let userReminders = JSON.parse(localStorage.getItem('userReminders')) || [];
@@ -627,34 +638,63 @@ if (document.getElementById("entryForm")) {
       list.innerHTML = '';
       
       if (userReminders.length === 0) {
-        list.innerHTML = '<div class="empty-state"><div>🔔</div><p>No tienes recordatorios</p></div>';
+        list.innerHTML = '<div class="empty-state"><i class="bx bx-bell"></i><p>No tienes recordatorios</p></div>';
         return;
       }
       
       userReminders.forEach((reminder, index) => {
         const item = document.createElement('div');
         item.className = `reminder-item ${reminder.priority}`;
+        
+        const priorityLabels = {
+          'low': 'Baja',
+          'medium': 'Media', 
+          'high': 'Alta'
+        };
+        
+        const priorityIcons = {
+          'low': 'bx-info-circle',
+          'medium': 'bx-time',
+          'high': 'bx-error-circle'
+        };
+        
         item.innerHTML = `
           <div class="reminder-content">
-            <strong>${reminder.text}</strong>
-            <div class="reminder-priority">${reminder.priority}</div>
+            <div class="reminder-text">${reminder.text}</div>
+            <div class="reminder-meta">
+              <div class="reminder-date">
+                <i class='bx bx-calendar'></i>
+                ${new Date(reminder.createdAt).toLocaleDateString()}
+              </div>
+              <div class="reminder-priority-tag">
+                <i class='bx ${priorityIcons[reminder.priority]}'></i>
+                ${priorityLabels[reminder.priority]}
+              </div>
+            </div>
           </div>
-          <button class="deleteBtn" data-index="${index}">🗑</button>
+          <div class="reminder-actions">
+            <button class="delete-reminder-btn" data-index="${index}">
+              <i class='bx bx-trash'></i>
+              Eliminar
+            </button>
+          </div>
         `;
         list.appendChild(item);
       });
       
       // Event listeners para eliminar
-      document.querySelectorAll('#userRemindersList .deleteBtn').forEach(btn => {
+      document.querySelectorAll('#userRemindersList .delete-reminder-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const index = parseInt(this.getAttribute('data-index'));
-          userReminders.splice(index, 1);
-          localStorage.setItem('userReminders', JSON.stringify(userReminders));
-          displayUserReminders();
-          
-          // Actualizar carrusel también
-          if (window.updateCarousel) {
-            window.updateCarousel();
+          if (confirm('¿Eliminar este recordatorio?')) {
+            userReminders.splice(index, 1);
+            localStorage.setItem('userReminders', JSON.stringify(userReminders));
+            displayUserReminders();
+            
+            // Actualizar carrusel también
+            if (window.updateCarousel) {
+              window.updateCarousel();
+            }
           }
         });
       });
@@ -663,8 +703,13 @@ if (document.getElementById("entryForm")) {
     reminderForm.addEventListener('submit', function(e) {
       e.preventDefault();
       
-      const text = document.getElementById('reminderText').value;
+      const text = document.getElementById('reminderText').value.trim();
       const priority = document.getElementById('reminderPriority').value;
+      
+      if (!text) {
+        alert('Por favor ingresa un texto para el recordatorio');
+        return;
+      }
       
       userReminders.push({
         text: text,
@@ -680,6 +725,9 @@ if (document.getElementById("entryForm")) {
       if (window.updateCarousel) {
         window.updateCarousel();
       }
+      
+      // Mostrar mensaje de éxito
+      alert('¡Recordatorio agregado correctamente!');
     });
 
     displayUserReminders();
@@ -693,10 +741,16 @@ if (document.getElementById("entryForm")) {
       const accountSince = document.getElementById('accountSince');
       
       if (accountUsername && accountEmail && accountSince) {
-        const decoded = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
-        accountUsername.textContent = decoded.username;
-        accountEmail.textContent = decoded.email;
-        accountSince.textContent = new Date(decoded.iat * 1000).toLocaleDateString();
+        const token = localStorage.getItem('token');
+        if (token) {
+          const decoded = JSON.parse(atob(token.split('.')[1]));
+          accountUsername.textContent = decoded.username || 'Usuario';
+          accountEmail.textContent = decoded.email || 'No disponible';
+          
+          // Usar la fecha de creación del token o fecha actual
+          const joinDate = decoded.iat ? new Date(decoded.iat * 1000) : new Date();
+          accountSince.textContent = joinDate.toLocaleDateString();
+        }
       }
     } catch (error) {
       console.error('Error cargando info de cuenta:', error);
@@ -706,4 +760,4 @@ if (document.getElementById("entryForm")) {
   loadAccountInfo();
 }
 
-console.log("app.js cargado");
+console.log("app.js cargado completamente");

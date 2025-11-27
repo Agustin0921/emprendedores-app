@@ -214,7 +214,7 @@ input:focus, select:focus {
 .reminders-carousel {
   position: relative;
   background: linear-gradient(135deg, var(--white) 0%, var(--cyan-pastel) 100%);
-  padding: 20px 80px;
+  padding: 16px 80px;
   overflow: hidden;
   color: var(--black);
   border-bottom: 1px solid var(--gray-light);
@@ -224,7 +224,7 @@ input:focus, select:focus {
 .carousel-container {
   overflow: hidden;
   position: relative;
-  height: 80px;
+  height: 70px;
   display: flex;
   align-items: center;
   border-radius: 12px;
@@ -241,13 +241,13 @@ input:focus, select:focus {
 
 .carousel-item {
   flex: 0 0 100%;
-  padding: 20px 40px;
+  padding: 16px 40px;
   text-align: center;
   font-weight: 500;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 12px;
   font-size: 1rem;
   position: relative;
   color: var(--gray-dark);
@@ -258,26 +258,28 @@ input:focus, select:focus {
   background: linear-gradient(135deg, var(--magenta-pastel), var(--white));
   border: 2px solid var(--magenta);
   border-radius: 8px;
-  margin: 0 20%;
+  margin: 0 25%;
   position: relative;
+  padding: 14px 30px;
 }
 
 .carousel-item.high-priority::before {
   content: '❗ ALTA PRIORIDAD';
   position: absolute;
-  top: -12px;
+  top: -10px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--magenta);
   color: var(--white);
-  padding: 4px 16px;
-  border-radius: 20px;
-  font-size: 0.75rem;
+  padding: 3px 12px;
+  border-radius: 16px;
+  font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   box-shadow: 0 2px 8px rgba(219, 39, 119, 0.3);
   z-index: 2;
+  white-space: nowrap;
 }
 
 .carousel-item.high-priority i {
@@ -292,18 +294,18 @@ input:focus, select:focus {
   top: 50%;
   transform: translateY(-50%);
   width: 4px;
-  height: 28px;
+  height: 24px;
   background: linear-gradient(135deg, var(--cyan), var(--cyan-light));
   border-radius: 0 3px 3px 0;
 }
 
 .carousel-item i {
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   color: var(--cyan);
   background: var(--cyan-pastel);
-  padding: 8px;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(14, 165, 233, 0.15);
+  padding: 6px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.15);
 }
 
 .carousel-btn {
@@ -313,163 +315,184 @@ input:focus, select:focus {
   background: var(--white);
   border: 1px solid var(--gray-light);
   color: var(--cyan);
-  padding: 12px 14px;
+  padding: 10px 12px;
   cursor: pointer;
   border-radius: 50%;
-  font-size: 18px;
+  font-size: 16px;
   transition: all 0.3s ease;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 .carousel-btn:hover {
   background: var(--cyan);
   color: var(--white);
   transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
   border-color: var(--cyan);
 }
 
 .carousel-btn.prev {
-  left: 20px;
+  left: 15px;
 }
 
 .carousel-btn.next {
-  right: 20px;
+  right: 15px;
 }
 
-/* Indicadores del carrusel */
-.carousel-indicators {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 6px;
-  z-index: 5;
-}
-
-.carousel-indicator {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--gray-light);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.carousel-indicator.active {
-  background: var(--cyan);
-  transform: scale(1.2);
-}
-
-/* LISTA DE RECORDATORIOS PERSONALES MEJORADA */
+/* LISTA DE RECORDATORIOS PERSONALES - COMPLETAMENTE REDISEÑADA */
 .reminders-list {
   margin-top: 20px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
 }
 
 .reminder-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 14px 16px;
+  align-items: flex-start;
+  padding: 16px;
   background: var(--white);
-  border-radius: 8px;
-  margin-bottom: 10px;
-  border-left: 4px solid;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  border-left: 5px solid;
   transition: all 0.3s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
   width: 100%;
+  position: relative;
+  min-height: 70px;
 }
 
-/* Recordatorios de alta prioridad con margen y destacado */
+/* Recordatorios de alta prioridad - CENTRADOS Y MEJOR DISEÑADOS */
 .reminder-item.high {
-  margin-left: 10%;
-  margin-right: 10%;
+  margin: 12px auto;
   border: 2px solid var(--magenta);
   border-left: 6px solid var(--magenta);
-  background: linear-gradient(135deg, var(--magenta-pastel), var(--white));
+  background: linear-gradient(135deg, var(--magenta-pastel) 0%, var(--white) 100%);
+  box-shadow: 0 4px 15px rgba(219, 39, 119, 0.15);
+  max-width: 90%;
   position: relative;
-  box-shadow: 0 4px 12px rgba(219, 39, 119, 0.15);
+  padding-top: 24px;
 }
 
 .reminder-item.high::before {
-  content: '❗ ALTA PRIORIDAD';
+  content: '🔴 ALTA PRIORIDAD';
   position: absolute;
-  top: -10px;
+  top: -8px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--magenta);
   color: var(--white);
-  padding: 4px 12px;
+  padding: 4px 16px;
   border-radius: 20px;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(219, 39, 119, 0.3);
-}
-
-.reminder-item.high:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(219, 39, 119, 0.2);
+  letter-spacing: 0.8px;
+  box-shadow: 0 2px 10px rgba(219, 39, 119, 0.4);
+  z-index: 2;
+  white-space: nowrap;
 }
 
 .reminder-item.medium {
   border-left-color: var(--yellow);
-  background: var(--yellow-pastel);
+  background: linear-gradient(135deg, var(--yellow-pastel) 0%, var(--white) 100%);
+  border-left-width: 5px;
 }
 
 .reminder-item.low {
   border-left-color: var(--cyan);
-  background: var(--cyan-pastel);
+  background: linear-gradient(135deg, var(--cyan-pastel) 0%, var(--white) 100%);
+  border-left-width: 5px;
 }
 
-.reminder-item:hover:not(.high) {
-  transform: translateX(5px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.reminder-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
 }
 
 .reminder-content {
   flex: 1;
   display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 12px;
+}
+
+.reminder-text {
+  font-weight: 500;
+  color: var(--black);
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.reminder-meta {
+  display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--gray-dark);
 }
 
-.reminder-content i {
-  font-size: 1.1rem;
+.reminder-date {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.reminder-priority {
-  font-size: 0.7rem;
-  padding: 4px 8px;
+.reminder-priority-tag {
+  padding: 2px 8px;
   border-radius: 12px;
-  background: var(--gray-light);
-  margin-left: 10px;
-  text-transform: uppercase;
+  font-size: 0.7rem;
   font-weight: 600;
-  min-width: 60px;
-  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
-.reminder-item.low .reminder-priority {
+.reminder-item.low .reminder-priority-tag {
   background: var(--cyan);
   color: white;
 }
 
-.reminder-item.medium .reminder-priority {
+.reminder-item.medium .reminder-priority-tag {
   background: var(--yellow);
   color: var(--black);
 }
 
-.reminder-item.high .reminder-priority {
+.reminder-item.high .reminder-priority-tag {
   background: var(--magenta);
   color: white;
   font-weight: 700;
+}
+
+.reminder-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.delete-reminder-btn {
+  background: var(--danger);
+  color: var(--white);
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 12px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.delete-reminder-btn:hover {
+  background: #b91c1c;
+  transform: scale(1.05);
 }
 
 /* PRESUPUESTOS */
@@ -949,36 +972,47 @@ input:focus, select:focus {
   }
   
   .reminders-carousel {
-    padding: 15px 50px;
+    padding: 12px 50px;
   }
   
   .carousel-container {
-    height: 70px;
+    height: 60px;
   }
   
   .carousel-item {
-    padding: 15px 20px;
+    padding: 12px 20px;
     font-size: 0.9rem;
   }
   
   .carousel-item.high-priority {
-    margin: 0 10%;
+    margin: 0 15%;
+    padding: 10px 20px;
   }
   
   .carousel-item.high-priority::before {
     font-size: 0.65rem;
-    padding: 3px 10px;
+    padding: 2px 10px;
   }
   
   /* Recordatorios alta prioridad en móvil */
   .reminder-item.high {
-    margin-left: 5%;
-    margin-right: 5%;
+    margin: 10px auto;
+    max-width: 95%;
   }
   
   .reminder-item.high::before {
-    font-size: 0.6rem;
-    padding: 3px 8px;
+    font-size: 0.65rem;
+    padding: 3px 12px;
+  }
+  
+  .reminder-content {
+    padding-right: 8px;
+  }
+  
+  .reminder-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
   }
   
   .entries-container {

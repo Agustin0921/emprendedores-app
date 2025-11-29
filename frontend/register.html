@@ -7,22 +7,28 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <main class="container">
-        <div class="card">
+    <main class="auth-container">
+        <div class="auth-card">
         <h1>Registro</h1>
-        <form id="registerForm">
-            <label>Nombre de usuario</label>
-            <input type="text" id="regUsername" autocomplete="username" required />
+        <form id="registerForm" class="auth-form">
+            <div class="form-group">
+                <label>Nombre de usuario</label>
+                <input type="text" id="regUsername" class="auth-input" autocomplete="username" placeholder="Tu nombre de usuario" required />
+            </div>
             
-            <label>Email</label>
-            <input type="email" id="regEmail" autocomplete="email" required />
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="regEmail" class="auth-input" autocomplete="email" placeholder="tu@email.com" required />
+            </div>
             
-            <label>Contraseña</label>
-            <input type="password" id="regPassword" autocomplete="new-password" required minlength="6" />
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" id="regPassword" class="auth-input" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required minlength="6" />
+            </div>
             
-            <button type="submit" class="btn">Crear cuenta</button>
+            <button type="submit" class="auth-btn">Crear cuenta</button>
         </form>
-        <p>¿Tenés cuenta? <a href="login.html">Iniciar sesión</a></p>
+        <p class="auth-link">¿Tenés cuenta? <a href="login.html">Iniciar sesión</a></p>
         </div>
     </main>
 <script src="app.js"></script>

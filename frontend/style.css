@@ -17,6 +17,12 @@
   --white: #ffffff;
   --success: #16a34a;
   --danger: #dc2626;
+  --purple: #8b5cf6;
+  --purple-light: #c4b5fd;
+  --blue: #3b82f6;
+  --blue-light: #93c5fd;
+  --green: #10b981;
+  --green-light: #a7f3d0;
 }
 
 * {
@@ -36,6 +42,165 @@ body {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+}
+
+/* ========================= */
+/* ESTILOS MEJORADOS PARA LOGIN Y REGISTER */
+/* ========================= */
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><polygon fill="%23ffffff" fill-opacity="0.05" points="0,1000 1000,0 1000,1000"/></svg>');
+  background-size: cover;
+}
+
+.auth-card {
+  background: var(--white);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 2;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.auth-card h1 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: var(--black);
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: var(--gray-dark);
+  font-size: 0.95rem;
+}
+
+.auth-input {
+  padding: 14px 16px;
+  border: 2px solid var(--gray-light);
+  border-radius: 12px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: var(--white);
+  color: var(--black);
+}
+
+.auth-input:focus {
+  outline: none;
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+  transform: translateY(-2px);
+}
+
+.auth-input::placeholder {
+  color: var(--gray);
+}
+
+.auth-btn {
+  background: linear-gradient(135deg, var(--cyan), var(--purple));
+  color: var(--white);
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.auth-btn:hover::before {
+  left: 100%;
+}
+
+.auth-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
+}
+
+.auth-link {
+  text-align: center;
+  margin-top: 25px;
+  color: var(--gray-dark);
+}
+
+.auth-link a {
+  color: var(--cyan);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.auth-link a:hover {
+  color: var(--purple);
+  text-decoration: underline;
+}
+
+/* Animación de entrada */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-card {
+  animation: slideUp 0.6s ease-out;
 }
 
 /* HEADER MÁS SOFISTICADO */
@@ -1110,6 +1275,20 @@ input:focus, select:focus {
     width: 100%;
     justify-content: space-between;
   }
+
+  /* Login/Register responsive */
+  .auth-container {
+    padding: 10px;
+  }
+  
+  .auth-card {
+    padding: 30px 20px;
+    margin: 10px;
+  }
+  
+  .auth-card h1 {
+    font-size: 1.8rem;
+  }
 }
 
 /* Para pantallas muy pequeñas */
@@ -1129,70 +1308,118 @@ input:focus, select:focus {
   .card {
     padding: 12px;
   }
+
+  .auth-card {
+    padding: 25px 15px;
+  }
+  
+  .auth-card h1 {
+    font-size: 1.6rem;
+  }
+  
+  .auth-input {
+    padding: 12px 14px;
+  }
 }
 
 /* Estilos para el nuevo sistema de recordatorios */
 #targetDateGroup {
   transition: all 0.3s ease;
-  padding: 10px;
-  background: var(--card-bg);
+  padding: 12px;
+  background: rgba(147, 51, 234, 0.05);
   border-radius: 8px;
   border-left: 4px solid var(--purple);
+  margin: 10px 0;
+}
+
+#targetDateGroup label {
+  font-weight: 600;
+  color: var(--purple);
+  margin-bottom: 8px;
+  display: block;
+}
+
+#targetDateGroup input[type="date"] {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid var(--purple-light);
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+#targetDateGroup small {
+  color: var(--text-light);
+  font-size: 0.8em;
+  display: block;
 }
 
 .reminder-item.has-target-date {
   border-left: 4px solid var(--purple);
+  background: linear-gradient(135deg, var(--card-bg) 0%, rgba(147, 51, 234, 0.03) 100%);
 }
 
 .reminder-target-date {
   background: var(--purple-light);
   color: var(--purple);
-  padding: 4px 8px;
-  border-radius: 12px;
+  padding: 6px 12px;
+  border-radius: 16px;
   font-size: 0.8em;
-  margin-top: 5px;
+  margin-top: 8px;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  font-weight: 500;
 }
 
 .reminder-header {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .auto-priority {
   background: linear-gradient(45deg, var(--blue), var(--purple)) !important;
+  color: white !important;
 }
 
 .reminder-actions {
   display: flex;
-  gap: 5px;
+  gap: 8px;
+  align-items: center;
 }
 
 .edit-reminder-btn, .delete-reminder-btn {
   background: none;
   border: none;
-  padding: 6px;
+  padding: 8px;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: all 0.3s ease;
   font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .edit-reminder-btn {
   color: var(--blue);
+  background: var(--blue-light);
 }
 
 .edit-reminder-btn:hover {
-  background: var(--blue-light);
+  background: var(--blue);
+  color: white;
+  transform: scale(1.1);
 }
 
 .delete-reminder-btn {
   color: var(--red);
+  background: var(--red-light);
 }
 
 .delete-reminder-btn:hover {
-  background: var(--red-light);
+  background: var(--red);
+  color: white;
+  transform: scale(1.1);
 }
 
 /* Estados de prioridad automática */
@@ -1212,6 +1439,14 @@ input:focus, select:focus {
 /* Mejoras visuales para recordatorios con fecha */
 .reminder-item {
   transition: all 0.3s ease;
+  padding: 16px;
+  margin: 10px 0;
+  border-radius: 8px;
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 }
 
 .reminder-item:hover {
@@ -1221,13 +1456,20 @@ input:focus, select:focus {
 
 .reminder-content {
   flex: 1;
+  margin-right: 15px;
+}
+
+.reminder-text {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-color);
 }
 
 .reminder-meta {
   display: flex;
-  justify-content: between;
+  justify-content: space-between;
   align-items: center;
-  gap: 10px;
+  gap: 15px;
   flex-wrap: wrap;
   margin-top: 8px;
 }
@@ -1241,11 +1483,32 @@ input:focus, select:focus {
 }
 
 .reminder-priority-tag {
-  padding: 4px 8px;
-  border-radius: 12px;
+  padding: 6px 12px;
+  border-radius: 16px;
   font-size: 0.75em;
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+/* Indicadores visuales para urgencia */
+.reminder-item.high {
+  border: 2px solid var(--red-light);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { border-color: var(--red-light); }
+  50% { border-color: var(--red); }
+  100% { border-color: var(--red-light); }
+}
+
+.reminder-item.medium {
+  border: 1px solid var(--yellow);
+}
+
+.reminder-item.low {
+  border: 1px solid var(--green);
 }

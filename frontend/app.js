@@ -110,7 +110,7 @@ if (document.getElementById("registerForm")) {
   });
 }
 
-// DASHBOARD - VERSIÓN COMPLETA ACTUALIZADA
+// DASHBOARD - VERSIÓN COMPLETA ACTUALIZADA CON CORRECCIONES DE FECHAS
 if (document.getElementById("entryForm")) {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -227,6 +227,27 @@ if (document.getElementById("entryForm")) {
     document.getElementById('monthlyROI').textContent = monthlyROI + '%';
   }
 
+  // FUNCIÓN AUXILIAR PARA FORMATEAR FECHA CONSISTENTEMENTE
+  const formatDate = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      // Verificar si la fecha es válida
+      if (isNaN(date.getTime())) {
+        return 'Fecha inválida';
+      }
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch (error) {
+      console.error('Error formateando fecha:', error);
+      return 'Fecha no disponible';
+    }
+  };
+
   function displayEntries(entries) {
     const incomeList = document.getElementById("incomeList");
     const expenseList = document.getElementById("expenseList");
@@ -252,7 +273,7 @@ if (document.getElementById("entryForm")) {
         <div>
           <strong>${e.note || "Sin descripción"}</strong>
           <br>
-          <small>${e.category ? `📁 ${e.category} • ` : ''}${new Date(e.created_at).toLocaleDateString()}</small>
+          <small>${e.category ? `📁 ${e.category} • ` : ''}${formatDate(e.created_at)}</small>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
           <div class="entry-amount income-amount">
@@ -274,7 +295,7 @@ if (document.getElementById("entryForm")) {
         <div>
           <strong>${e.note || "Sin descripción"}</strong>
           <br>
-          <small>${e.category ? `📁 ${e.category} • ` : ''}${new Date(e.created_at).toLocaleDateString()}</small>
+          <small>${e.category ? `📁 ${e.category} • ` : ''}${formatDate(e.created_at)}</small>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
           <div class="entry-amount expense-amount">
@@ -325,6 +346,8 @@ if (document.getElementById("entryForm")) {
           <strong>${it.name}</strong>
           <br>
           <small>Cantidad: ${it.qty} • Precio unitario: $${Number(it.price).toFixed(2)}</small>
+          <br>
+          <small>Agregado: ${formatDate(it.created_at)}</small>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
           <div style="font-weight: 600; color: var(--yellow);">
@@ -700,10 +723,30 @@ if (document.getElementById("entryForm")) {
     }
   }
 
-  // SISTEMA DE RECORDATORIOS PERSONALES - COMPLETAMENTE REDISEÑADO
+  // SISTEMA DE RECORDATORIOS PERSONALES - CON FECHAS CORREGIDAS
   const reminderForm = document.getElementById('reminderForm');
   if (reminderForm) {
     let userReminders = JSON.parse(localStorage.getItem('userReminders')) || [];
+
+    // FUNCIÓN PARA FORMATEAR FECHA DE RECORDATORIOS
+    const formatReminderDate = (dateString) => {
+      try {
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) {
+          return 'Fecha inválida';
+        }
+        return date.toLocaleDateString('es-ES', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (error) {
+        console.error('Error formateando fecha de recordatorio:', error);
+        return 'Fecha no disponible';
+      }
+    };
 
     function displayUserReminders() {
       const list = document.getElementById('userRemindersList');
@@ -738,7 +781,7 @@ if (document.getElementById("entryForm")) {
             <div class="reminder-meta">
               <div class="reminder-date">
                 <i class='bx bx-calendar'></i>
-                ${new Date(reminder.createdAt).toLocaleDateString()}
+                ${formatReminderDate(reminder.createdAt)}
               </div>
               <div class="reminder-priority-tag">
                 <i class='bx ${priorityIcons[reminder.priority]}'></i>
@@ -769,6 +812,11 @@ if (document.getElementById("entryForm")) {
             if (window.updateCarousel) {
               window.updateCarousel();
             }
+
+            // Actualizar badge de notificaciones
+            if (window.updateNotificationBadge) {
+              window.updateNotificationBadge();
+            }
           }
         });
       });
@@ -785,10 +833,12 @@ if (document.getElementById("entryForm")) {
         return;
       }
       
+      // Usar fecha actual del cliente de manera consistente
+      const now = new Date();
       userReminders.push({
         text: text,
         priority: priority,
-        createdAt: new Date().toISOString()
+        createdAt: now.toISOString() // Guardar en formato ISO para consistencia
       });
       
       localStorage.setItem('userReminders', JSON.stringify(userReminders));
@@ -798,6 +848,11 @@ if (document.getElementById("entryForm")) {
       // ACTUALIZAR CARRUSEL
       if (window.updateCarousel) {
         window.updateCarousel();
+      }
+
+      // ACTUALIZAR BADGE DE NOTIFICACIONES
+      if (window.updateNotificationBadge) {
+        window.updateNotificationBadge();
       }
       
       // Mostrar mensaje de éxito
@@ -885,7 +940,7 @@ if (document.getElementById("entryForm")) {
     updateNotificationBadge();
   }
 
-  // INFORMACIÓN DE CUENTA - Solo si existe
+  // INFORMACIÓN DE CUENTA - CON FECHA DE REGISTRO CORREGIDA
   function loadAccountInfo() {
     try {
       const accountUsername = document.getElementById('accountUsername');
@@ -899,9 +954,13 @@ if (document.getElementById("entryForm")) {
           accountUsername.textContent = decoded.username || 'Usuario';
           accountEmail.textContent = decoded.email || 'No disponible';
           
-          // Usar la fecha de creación del token o fecha actual
-          const joinDate = decoded.iat ? new Date(decoded.iat * 1000) : new Date();
-          accountSince.textContent = joinDate.toLocaleDateString();
+          // Usar la fecha de creación del token (fecha real de registro)
+          const joinDate = decoded.created_at ? new Date(decoded.created_at) : new Date();
+          accountSince.textContent = joinDate.toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
         }
       }
     } catch (error) {
@@ -914,4 +973,4 @@ if (document.getElementById("entryForm")) {
   loadAccountInfo();
 }
 
-console.log("app.js cargado completamente");
+console.log("app.js cargado completamente con correcciones de fechas");

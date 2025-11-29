@@ -237,7 +237,7 @@
         </div>
       </div>
 
-      <!-- SECCIÓN RECORDATORIOS -->
+          <!-- SECCIÓN RECORDATORIOS -->
       <div id="remindersSection" class="section">
         <div class="container">
           <div class="card wide">
@@ -253,8 +253,17 @@
                   <option value="low">Baja</option>
                   <option value="medium" selected>Media</option>
                   <option value="high">Alta</option>
+                  <option value="auto">Automática (con fecha)</option>
                 </select>
               </div>
+              
+              <!-- NUEVO CAMPO PARA FECHA -->
+              <div class="form-group" id="targetDateGroup" style="display: none;">
+                <label for="reminderTargetDate">Fecha objetivo:</label>
+                <input type="date" id="reminderTargetDate" min="<?php echo date('Y-m-d'); ?>">
+                <small>La prioridad aumentará automáticamente cuando se acerque la fecha</small>
+              </div>
+              
               <button type="submit" class="btn">
                 <i class='bx bx-plus'></i> Agregar Recordatorio
               </button>

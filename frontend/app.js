@@ -722,29 +722,91 @@ if (document.getElementById("entryForm")) {
     }
   }
 
-  // SISTEMA DE RECORDATORIOS PERSONALES - COMPLETAMENTE REDISEÑADO
+  // SISTEMA DE RECORDATORIOS PERSONALES MEJORADO - CON FECHAS Y PRIORIDAD AUTOMÁTICA
   const reminderForm = document.getElementById('reminderForm');
   if (reminderForm) {
     let userReminders = JSON.parse(localStorage.getItem('userReminders')) || [];
 
-    // FUNCIÓN NUEVA: Formatear fecha de recordatorios
-    const formatReminderDate = (dateString) => {
+    // FUNCIÓN NUEVA: Calcular prioridad automática basada en fecha
+    const calculateAutoPriority = (targetDate) => {
+      const now = new Date();
+      const target = new Date(targetDate);
+      const diffTime = target - now;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      
+      if (diffDays <= 0) {
+        return 'high'; // Fecha vencida o hoy
+      } else if (diffDays <= 2) {
+        return 'high'; // 1-2 días
+      } else if (diffDays <= 7) {
+        return 'medium'; // 3-7 días
+      } else {
+        return 'low'; // Más de 7 días
+      }
+    };
+
+    // FUNCIÓN NUEVA: Calcular días restantes
+    const getDaysRemaining = (targetDate) => {
+      const now = new Date();
+      const target = new Date(targetDate);
+      const diffTime = target - now;
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      return diffDays;
+    };
+
+    // FUNCIÓN NUEVA: Formatear fecha de recordatorios con información de días
+    const formatReminderDate = (dateString, targetDate = null) => {
       try {
         const date = new Date(dateString);
         if (isNaN(date.getTime())) {
           return 'Fecha inválida';
         }
-        return date.toLocaleDateString('es-ES', {
+        
+        let dateText = date.toLocaleDateString('es-ES', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
           hour: '2-digit',
           minute: '2-digit'
         });
+
+        // Si hay fecha objetivo, agregar información de días restantes
+        if (targetDate) {
+          const daysRemaining = getDaysRemaining(targetDate);
+          if (daysRemaining > 0) {
+            dateText += ` (${daysRemaining} día${daysRemaining !== 1 ? 's' : ''} restante${daysRemaining !== 1 ? 's' : ''})`;
+          } else if (daysRemaining === 0) {
+            dateText += ' (¡Hoy!)';
+          } else {
+            dateText += ` (Vencido hace ${Math.abs(daysRemaining)} día${Math.abs(daysRemaining) !== 1 ? 's' : ''})`;
+          }
+        }
+
+        return dateText;
       } catch (error) {
         console.error('Error formateando fecha de recordatorio:', error);
         return 'Fecha no disponible';
       }
+    };
+
+    // FUNCIÓN NUEVA: Actualizar prioridades automáticamente
+    const updateAutoPriorities = () => {
+      let updated = false;
+      userReminders.forEach(reminder => {
+        if (reminder.targetDate && reminder.autoPriority) {
+          const newPriority = calculateAutoPriority(reminder.targetDate);
+          if (reminder.priority !== newPriority) {
+            reminder.priority = newPriority;
+            updated = true;
+          }
+        }
+      });
+      
+      if (updated) {
+        localStorage.setItem('userReminders', JSON.stringify(userReminders));
+      }
+      
+      return updated;
     };
 
     function displayUserReminders() {
@@ -758,9 +820,12 @@ if (document.getElementById("entryForm")) {
         return;
       }
       
+      // Actualizar prioridades antes de mostrar
+      updateAutoPriorities();
+      
       userReminders.forEach((reminder, index) => {
         const item = document.createElement('div');
-        item.className = `reminder-item ${reminder.priority}`;
+        item.className = `reminder-item ${reminder.priority} ${reminder.targetDate ? 'has-target-date' : ''}`;
         
         const priorityLabels = {
           'low': 'Baja',
@@ -773,25 +838,51 @@ if (document.getElementById("entryForm")) {
           'medium': 'bx-time',
           'high': 'bx-error-circle'
         };
+
+        // Icono especial para recordatorios con fecha
+        const getReminderIcon = (reminder) => {
+          if (reminder.targetDate) {
+            const daysRemaining = getDaysRemaining(reminder.targetDate);
+            if (daysRemaining <= 0) return 'bx-alarm-exclamation';
+            if (daysRemaining <= 2) return 'bx-alarm';
+            return 'bx-calendar-event';
+          }
+          return priorityIcons[reminder.priority];
+        };
+
+        const reminderIcon = getReminderIcon(reminder);
         
         item.innerHTML = `
           <div class="reminder-content">
-            <div class="reminder-text">${reminder.text}</div>
+            <div class="reminder-header">
+              <div class="reminder-text">${reminder.text}</div>
+              ${reminder.targetDate ? `
+                <div class="reminder-target-date">
+                  <i class='bx bx-calendar-star'></i>
+                  Para: ${new Date(reminder.targetDate).toLocaleDateString('es-ES')}
+                </div>
+              ` : ''}
+            </div>
             <div class="reminder-meta">
               <div class="reminder-date">
                 <i class='bx bx-calendar'></i>
-                ${formatReminderDate(reminder.createdAt)}
+                Creado: ${formatReminderDate(reminder.createdAt, reminder.targetDate)}
               </div>
-              <div class="reminder-priority-tag">
-                <i class='bx ${priorityIcons[reminder.priority]}'></i>
-                ${priorityLabels[reminder.priority]}
+              <div class="reminder-priority-tag ${reminder.autoPriority ? 'auto-priority' : ''}">
+                <i class='bx ${reminderIcon}'></i>
+                ${reminder.priority === 'auto' ? 'Auto' : priorityLabels[reminder.priority]}
+                ${reminder.autoPriority ? ' (Auto)' : ''}
               </div>
             </div>
           </div>
           <div class="reminder-actions">
-            <button class="delete-reminder-btn" data-index="${index}">
+            ${reminder.targetDate ? `
+              <button class="edit-reminder-btn" data-index="${index}" title="Editar recordatorio">
+                <i class='bx bx-edit'></i>
+              </button>
+            ` : ''}
+            <button class="delete-reminder-btn" data-index="${index}" title="Eliminar recordatorio">
               <i class='bx bx-trash'></i>
-              Eliminar
             </button>
           </div>
         `;
@@ -814,28 +905,103 @@ if (document.getElementById("entryForm")) {
           }
         });
       });
+
+      // Event listeners para editar
+      document.querySelectorAll('#userRemindersList .edit-reminder-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const index = parseInt(this.getAttribute('data-index'));
+          editReminder(index);
+        });
+      });
     }
 
+    // FUNCIÓN NUEVA: Editar recordatorio
+    function editReminder(index) {
+      const reminder = userReminders[index];
+      
+      const newText = prompt('Editar texto del recordatorio:', reminder.text);
+      if (newText === null) return; // Usuario canceló
+      
+      if (reminder.targetDate) {
+        const currentDate = reminder.targetDate.split('T')[0];
+        const newDate = prompt('Editar fecha objetivo (YYYY-MM-DD):', currentDate);
+        if (newDate === null) return;
+        
+        if (newDate) {
+          const dateObj = new Date(newDate + 'T23:59:59');
+          if (isNaN(dateObj.getTime())) {
+            alert('Fecha inválida. Usa el formato YYYY-MM-DD');
+            return;
+          }
+          reminder.targetDate = dateObj.toISOString();
+          
+          // Si es prioridad automática, actualizar prioridad
+          if (reminder.autoPriority) {
+            reminder.priority = calculateAutoPriority(reminder.targetDate);
+          }
+        }
+      }
+      
+      if (newText.trim()) {
+        reminder.text = newText.trim();
+        localStorage.setItem('userReminders', JSON.stringify(userReminders));
+        displayUserReminders();
+        
+        // Actualizar carrusel
+        if (window.updateCarousel) {
+          window.updateCarousel();
+        }
+        
+        alert('¡Recordatorio actualizado!');
+      }
+    }
+
+    // MODIFICAR el event listener del formulario para soportar fechas
     reminderForm.addEventListener('submit', function(e) {
       e.preventDefault();
       
       const text = document.getElementById('reminderText').value.trim();
       const priority = document.getElementById('reminderPriority').value;
+      const targetDateInput = document.getElementById('reminderTargetDate');
+      const targetDate = targetDateInput ? targetDateInput.value : null;
       
       if (!text) {
         alert('Por favor ingresa un texto para el recordatorio');
         return;
       }
       
-      userReminders.push({
+      const reminderData = {
         text: text,
         priority: priority,
-        createdAt: new Date().toISOString() // FECHA REAL
-      });
+        createdAt: new Date().toISOString(),
+        targetDate: null,
+        autoPriority: false
+      };
       
+      // Si hay fecha objetivo y es prioridad automática
+      if (targetDate && priority === 'auto') {
+        const dateObj = new Date(targetDate + 'T23:59:59');
+        if (isNaN(dateObj.getTime())) {
+          alert('Fecha inválida. Usa el formato YYYY-MM-DD');
+          return;
+        }
+        reminderData.targetDate = dateObj.toISOString();
+        reminderData.autoPriority = true;
+        reminderData.priority = calculateAutoPriority(reminderData.targetDate);
+      }
+      
+      userReminders.push(reminderData);
       localStorage.setItem('userReminders', JSON.stringify(userReminders));
       displayUserReminders();
       this.reset();
+      
+      // Resetear selector de prioridad a 'low'
+      document.getElementById('reminderPriority').value = 'low';
+      // Ocultar campo de fecha
+      const targetDateGroup = document.getElementById('targetDateGroup');
+      if (targetDateGroup) {
+        targetDateGroup.style.display = 'none';
+      }
       
       // ACTUALIZAR CARRUSEL
       if (window.updateCarousel) {
@@ -845,6 +1011,35 @@ if (document.getElementById("entryForm")) {
       // Mostrar mensaje de éxito
       alert('¡Recordatorio agregado correctamente!');
     });
+
+    // FUNCIÓN NUEVA: Actualizar selector de prioridad cuando cambie
+    const prioritySelect = document.getElementById('reminderPriority');
+    const targetDateGroup = document.getElementById('targetDateGroup');
+    
+    if (prioritySelect && targetDateGroup) {
+      prioritySelect.addEventListener('change', function() {
+        if (this.value === 'auto') {
+          targetDateGroup.style.display = 'block';
+        } else {
+          targetDateGroup.style.display = 'none';
+        }
+      });
+    }
+
+    // Inicializar mostrando/ocultando el campo de fecha
+    if (targetDateGroup && prioritySelect) {
+      targetDateGroup.style.display = prioritySelect.value === 'auto' ? 'block' : 'none';
+    }
+
+    // Actualizar prioridades cada minuto
+    setInterval(() => {
+      if (updateAutoPriorities()) {
+        displayUserReminders();
+        if (window.updateCarousel) {
+          window.updateCarousel();
+        }
+      }
+    }, 60000); // Cada minuto
 
     displayUserReminders();
   }
@@ -960,4 +1155,4 @@ if (document.getElementById("entryForm")) {
   loadAccountInfo();
 }
 
-console.log("app.js cargado completamente");
+console.log("app.js cargado completamente con sistema de recordatorios inteligentes");

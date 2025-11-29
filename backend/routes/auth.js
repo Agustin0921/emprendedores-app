@@ -3,13 +3,14 @@ const db = require("../db");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
+// Usar JWT_SECRET correctamente
 const SECRET = process.env.JWT_SECRET;
 if (!SECRET) {
   console.error("❌ ERROR CRÍTICO: JWT_SECRET no está definido");
   console.error("❌ Por favor configura JWT_SECRET en Render");
 }
 
-// Registro - AGREGAR FECHA DE CREACIÓN
+// Registro
 router.post("/register", async (req, res) => {
   const { email, password, username } = req.body;
 
@@ -25,18 +26,16 @@ router.post("/register", async (req, res) => {
 
   try {
     const hash = await bcrypt.hash(password, 10);
-    const createdAt = new Date(); // Fecha actual del servidor
     
     const result = await db.query(
-      "INSERT INTO users (email, password, username, created_at) VALUES ($1, $2, $3, $4) RETURNING id, created_at",
-      [email, hash, username, createdAt]
+      "INSERT INTO users (email, password, username) VALUES ($1, $2, $3) RETURNING id, created_at",
+      [email, hash, username]
     );
 
     console.log("✅ Usuario registrado exitosamente, ID:", result.rows[0].id);
     res.json({ 
       success: true, 
-      message: "Usuario creado exitosamente. Ahora puedes iniciar sesión.",
-      created_at: result.rows[0].created_at
+      message: "Usuario creado exitosamente. Ahora puedes iniciar sesión." 
     });
   } catch (err) {
     console.error("❌ Error en registro:", err);
@@ -47,7 +46,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Login - INCLUIR FECHA DE REGISTRO EN EL TOKEN
+// Login - SOLO AGREGAR FECHA AL TOKEN
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -73,17 +72,19 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Email o contraseña incorrectos" });
     }
 
+    // Verificar que JWT_SECRET esté definido
     if (!SECRET) {
       console.error("❌ JWT_SECRET no definido al generar token");
       return res.status(500).json({ error: "Error de configuración del servidor" });
     }
 
+    // AGREGAR FECHA DE REGISTRO AL TOKEN
     const token = jwt.sign(
       { 
         id: user.id, 
         username: user.username,
         email: user.email,
-        created_at: user.created_at.toISOString() // INCLUIR FECHA DE REGISTRO
+        created_at: user.created_at ? user.created_at.toISOString() : new Date().toISOString() // FECHA REAL
       },
       SECRET,
       { expiresIn: "7d" }
@@ -96,38 +97,12 @@ router.post("/login", async (req, res) => {
       user: {
         id: user.id,
         username: user.username,
-        email: user.email,
-        created_at: user.created_at.toISOString() // FECHA DE REGISTRO
+        email: user.email
       }
     });
   } catch (err) {
     console.error("❌ Error en login:", err);
     return res.status(500).json({ error: "Error interno del servidor: " + err.message });
-  }
-});
-
-// Ruta para obtener información del usuario con fecha de registro
-router.get("/profile", auth, async (req, res) => {
-  try {
-    const result = await db.query(
-      "SELECT id, username, email, created_at FROM users WHERE id = $1",
-      [req.user.id]
-    );
-    
-    if (result.rows.length === 0) {
-      return res.status(404).json({ error: "Usuario no encontrado" });
-    }
-    
-    const user = result.rows[0];
-    res.json({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      created_at: user.created_at.toISOString()
-    });
-  } catch (err) {
-    console.error("❌ Error obteniendo perfil:", err);
-    res.status(500).json({ error: "Error interno del servidor" });
   }
 });
 

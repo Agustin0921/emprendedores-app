@@ -30,16 +30,13 @@ function auth(req, res, next) {
   }
 }
 
-// ACTUALIZAR ESTA RUTA POST PARA USAR FECHA ESPECÍFICA
+// ACTUALIZAR ESTA RUTA POST PARA INCLUIR CATEGORÍA
 router.post("/", auth, async (req, res) => {
-  const { type, amount, note, category, specificDate } = req.body;
+  const { type, amount, note, category } = req.body;
   try {
-    // Usar fecha específica si se proporciona, de lo contrario usar fecha actual del servidor
-    const createdAt = specificDate ? new Date(specificDate) : new Date();
-    
     await db.query(
-      "INSERT INTO entries (user_id, type, amount, note, category, created_at) VALUES ($1, $2, $3, $4, $5, $6)",
-      [req.user.id, type, amount, note, category || '', createdAt]
+      "INSERT INTO entries (user_id, type, amount, note, category) VALUES ($1, $2, $3, $4, $5)",
+      [req.user.id, type, amount, note, category || '']
     );
     res.json({ success: true });
   } catch (err) {
@@ -48,22 +45,14 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-// ACTUALIZAR ESTA RUTA GET PARA FORMATO DE FECHA CONSISTENTE
+// ACTUALIZAR ESTA RUTA GET PARA ASEGURAR QUE RETORNE created_at
 router.get("/", auth, async (req, res) => {
   try {
     const result = await db.query(
       "SELECT id, user_id, type, amount, note, category, created_at FROM entries WHERE user_id = $1 ORDER BY created_at DESC",
       [req.user.id]
     );
-    
-    // Formatear fechas de manera consistente
-    const entries = result.rows.map(entry => ({
-      ...entry,
-      // Mantener la fecha original de la base de datos
-      created_at: entry.created_at.toISOString()
-    }));
-    
-    res.json(entries);
+    res.json(result.rows);
   } catch (err) {
     console.error("Error en entries:", err);
     res.status(500).json({ error: "Error en la base de datos" });

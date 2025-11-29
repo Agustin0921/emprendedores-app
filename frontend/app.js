@@ -43,18 +43,12 @@ async function apiFetch(path, opts = {}) {
   }
 }
 
-// LOGIN HANDLER - VERSIÓN CORREGIDA
+// LOGIN HANDLER
 if (document.getElementById("loginForm")) {
   document.getElementById("loginForm").addEventListener("submit", async function(e) {
     e.preventDefault();
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
-
-    // Verificar que la API_URL esté configurada
-    if (!API_URL || API_URL.includes("ACTUALIZA")) {
-      alert("Error: La URL de la API no está configurada correctamente. Por favor actualiza API_URL en app.js");
-      return;
-    }
 
     const submitBtn = e.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
@@ -62,40 +56,18 @@ if (document.getElementById("loginForm")) {
     submitBtn.disabled = true;
 
     try {
-      console.log("🔍 Intentando conectar a:", API_URL + "/auth/login");
-      
-      // Usar fetch directamente para mejor debugging
-      const response = await fetch(API_URL + "/auth/login", {
+      const res = await apiFetch("/auth/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ 
-          email: email, 
-          password: password 
-        }),
+        body: { email: email, password: password },
       });
-
-      console.log("🔍 Status de respuesta:", response.status);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("🔍 Error del servidor:", errorText);
-        throw new Error(`Error del servidor (${response.status}): ${errorText}`);
-      }
-
-      const res = await response.json();
-      console.log("🔍 Respuesta recibida:", res);
 
       if (res.token) {
         localStorage.setItem("token", res.token);
-        alert("¡Login exitoso! Redirigiendo...");
         window.location.href = "dashboard.html";
       } else {
-        alert(res.error || "Error en login: No se recibió token");
+        alert(res.error || "Error en login");
       }
     } catch (error) {
-      console.error("🔍 Error completo:", error);
       alert("Error de conexión: " + error.message);
     } finally {
       submitBtn.textContent = originalText;
@@ -138,7 +110,7 @@ if (document.getElementById("registerForm")) {
   });
 }
 
-// DASHBOARD - VERSIÓN COMPLETA ACTUALIZADA CON CORRECCIONES DE FECHAS
+// DASHBOARD - VERSIÓN COMPLETA ACTUALIZADA
 if (document.getElementById("entryForm")) {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -255,11 +227,10 @@ if (document.getElementById("entryForm")) {
     document.getElementById('monthlyROI').textContent = monthlyROI + '%';
   }
 
-  // FUNCIÓN AUXILIAR PARA FORMATEAR FECHA CONSISTENTEMENTE
+  // FUNCIÓN NUEVA: Formatear fechas consistentemente
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
-      // Verificar si la fecha es válida
       if (isNaN(date.getTime())) {
         return 'Fecha inválida';
       }
@@ -293,7 +264,7 @@ if (document.getElementById("entryForm")) {
       expenseList.innerHTML = '<div class="empty-state"><i class="bx bx-money"></i><p>No hay egresos registrados</p></div>';
     }
 
-    // Mostrar ingresos
+    // Mostrar ingresos CON FECHAS REALES
     incomeEntries.forEach(function(e) {
       const div = document.createElement("div");
       div.className = "entry income-entry";
@@ -315,7 +286,7 @@ if (document.getElementById("entryForm")) {
       incomeList.appendChild(div);
     });
 
-    // Mostrar egresos
+    // Mostrar egresos CON FECHAS REALES
     expenseEntries.forEach(function(e) {
       const div = document.createElement("div");
       div.className = "entry expense-entry";
@@ -751,12 +722,12 @@ if (document.getElementById("entryForm")) {
     }
   }
 
-  // SISTEMA DE RECORDATORIOS PERSONALES - CON FECHAS CORREGIDAS
+  // SISTEMA DE RECORDATORIOS PERSONALES - COMPLETAMENTE REDISEÑADO
   const reminderForm = document.getElementById('reminderForm');
   if (reminderForm) {
     let userReminders = JSON.parse(localStorage.getItem('userReminders')) || [];
 
-    // FUNCIÓN PARA FORMATEAR FECHA DE RECORDATORIOS
+    // FUNCIÓN NUEVA: Formatear fecha de recordatorios
     const formatReminderDate = (dateString) => {
       try {
         const date = new Date(dateString);
@@ -840,11 +811,6 @@ if (document.getElementById("entryForm")) {
             if (window.updateCarousel) {
               window.updateCarousel();
             }
-
-            // Actualizar badge de notificaciones
-            if (window.updateNotificationBadge) {
-              window.updateNotificationBadge();
-            }
           }
         });
       });
@@ -861,12 +827,10 @@ if (document.getElementById("entryForm")) {
         return;
       }
       
-      // Usar fecha actual del cliente de manera consistente
-      const now = new Date();
       userReminders.push({
         text: text,
         priority: priority,
-        createdAt: now.toISOString() // Guardar en formato ISO para consistencia
+        createdAt: new Date().toISOString() // FECHA REAL
       });
       
       localStorage.setItem('userReminders', JSON.stringify(userReminders));
@@ -876,11 +840,6 @@ if (document.getElementById("entryForm")) {
       // ACTUALIZAR CARRUSEL
       if (window.updateCarousel) {
         window.updateCarousel();
-      }
-
-      // ACTUALIZAR BADGE DE NOTIFICACIONES
-      if (window.updateNotificationBadge) {
-        window.updateNotificationBadge();
       }
       
       // Mostrar mensaje de éxito
@@ -968,7 +927,7 @@ if (document.getElementById("entryForm")) {
     updateNotificationBadge();
   }
 
-  // INFORMACIÓN DE CUENTA - CON FECHA DE REGISTRO CORREGIDA
+  // INFORMACIÓN DE CUENTA - CON FECHA REAL
   function loadAccountInfo() {
     try {
       const accountUsername = document.getElementById('accountUsername');
@@ -982,7 +941,7 @@ if (document.getElementById("entryForm")) {
           accountUsername.textContent = decoded.username || 'Usuario';
           accountEmail.textContent = decoded.email || 'No disponible';
           
-          // Usar la fecha de creación del token (fecha real de registro)
+          // FECHA REAL DE REGISTRO desde el token
           const joinDate = decoded.created_at ? new Date(decoded.created_at) : new Date();
           accountSince.textContent = joinDate.toLocaleDateString('es-ES', {
             year: 'numeric',
@@ -1001,4 +960,4 @@ if (document.getElementById("entryForm")) {
   loadAccountInfo();
 }
 
-console.log("app.js cargado completamente con correcciones de fechas");
+console.log("app.js cargado completamente");

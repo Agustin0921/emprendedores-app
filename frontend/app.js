@@ -43,12 +43,18 @@ async function apiFetch(path, opts = {}) {
   }
 }
 
-// LOGIN HANDLER
+// LOGIN HANDLER - VERSIÓN CORREGIDA
 if (document.getElementById("loginForm")) {
   document.getElementById("loginForm").addEventListener("submit", async function(e) {
     e.preventDefault();
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
+
+    // Verificar que la API_URL esté configurada
+    if (!API_URL || API_URL.includes("ACTUALIZA")) {
+      alert("Error: La URL de la API no está configurada correctamente. Por favor actualiza API_URL en app.js");
+      return;
+    }
 
     const submitBtn = e.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.textContent;
@@ -56,18 +62,40 @@ if (document.getElementById("loginForm")) {
     submitBtn.disabled = true;
 
     try {
-      const res = await apiFetch("/auth/login", {
+      console.log("🔍 Intentando conectar a:", API_URL + "/auth/login");
+      
+      // Usar fetch directamente para mejor debugging
+      const response = await fetch(API_URL + "/auth/login", {
         method: "POST",
-        body: { email: email, password: password },
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ 
+          email: email, 
+          password: password 
+        }),
       });
+
+      console.log("🔍 Status de respuesta:", response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("🔍 Error del servidor:", errorText);
+        throw new Error(`Error del servidor (${response.status}): ${errorText}`);
+      }
+
+      const res = await response.json();
+      console.log("🔍 Respuesta recibida:", res);
 
       if (res.token) {
         localStorage.setItem("token", res.token);
+        alert("¡Login exitoso! Redirigiendo...");
         window.location.href = "dashboard.html";
       } else {
-        alert(res.error || "Error en login");
+        alert(res.error || "Error en login: No se recibió token");
       }
     } catch (error) {
+      console.error("🔍 Error completo:", error);
       alert("Error de conexión: " + error.message);
     } finally {
       submitBtn.textContent = originalText;

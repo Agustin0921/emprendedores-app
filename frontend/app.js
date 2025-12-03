@@ -247,6 +247,28 @@ if (document.getElementById("entryForm")) {
     }
   };
 
+  // FUNCIÓN NUEVA: Obtener texto del método de pago
+  const getPaymentMethodText = (method) => {
+    const methods = {
+      'efectivo': 'Efectivo',
+      'transferencia': 'Transferencia',
+      'tarjeta': 'Tarjeta',
+      'otro': 'Otro'
+    };
+    return methods[method] || method || 'No especificado';
+  };
+
+  // FUNCIÓN NUEVA: Obtener icono del método de pago
+  const getPaymentMethodIcon = (method) => {
+    const icons = {
+      'efectivo': 'bx-money',
+      'transferencia': 'bx-transfer',
+      'tarjeta': 'bx-credit-card',
+      'otro': 'bx-wallet'
+    };
+    return icons[method] || 'bx-wallet';
+  };
+
   function displayEntries(entries) {
     const incomeList = document.getElementById("incomeList");
     const expenseList = document.getElementById("expenseList");
@@ -264,15 +286,23 @@ if (document.getElementById("entryForm")) {
       expenseList.innerHTML = '<div class="empty-state"><i class="bx bx-money"></i><p>No hay egresos registrados</p></div>';
     }
 
-    // Mostrar ingresos CON FECHAS REALES
+    // Mostrar ingresos CON MÉTODO DE PAGO
     incomeEntries.forEach(function(e) {
       const div = document.createElement("div");
       div.className = "entry income-entry";
+      
+      const paymentIcon = getPaymentMethodIcon(e.payment_method);
+      const paymentText = getPaymentMethodText(e.payment_method);
+      
       div.innerHTML = `
         <div>
           <strong>${e.note || "Sin descripción"}</strong>
           <br>
-          <small>${e.category ? `📁 ${e.category} • ` : ''}${formatDate(e.created_at)}</small>
+          <small>
+            ${e.category ? `📁 ${e.category} • ` : ''}
+            <i class='bx ${paymentIcon}' title="${paymentText}"></i> ${paymentText} • 
+            ${formatDate(e.created_at)}
+          </small>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
           <div class="entry-amount income-amount">
@@ -286,15 +316,23 @@ if (document.getElementById("entryForm")) {
       incomeList.appendChild(div);
     });
 
-    // Mostrar egresos CON FECHAS REALES
+    // Mostrar egresos CON MÉTODO DE PAGO
     expenseEntries.forEach(function(e) {
       const div = document.createElement("div");
       div.className = "entry expense-entry";
+      
+      const paymentIcon = getPaymentMethodIcon(e.payment_method);
+      const paymentText = getPaymentMethodText(e.payment_method);
+      
       div.innerHTML = `
         <div>
           <strong>${e.note || "Sin descripción"}</strong>
           <br>
-          <small>${e.category ? `📁 ${e.category} • ` : ''}${formatDate(e.created_at)}</small>
+          <small>
+            ${e.category ? `📁 ${e.category} • ` : ''}
+            <i class='bx ${paymentIcon}' title="${paymentText}"></i> ${paymentText} • 
+            ${formatDate(e.created_at)}
+          </small>
         </div>
         <div style="display: flex; align-items: center; gap: 8px;">
           <div class="entry-amount expense-amount">
@@ -390,12 +428,14 @@ if (document.getElementById("entryForm")) {
       `$${marketingExpenses.toFixed(2)} / $${marketingBudget}`;
   }
 
+  // ACTUALIZADO: Ahora incluye método de pago
   document.getElementById("entryForm").addEventListener("submit", async function(e) {
     e.preventDefault();
     const type = document.getElementById("entryType").value;
     const category = document.getElementById("entryCategory").value;
     const amount = document.getElementById("entryAmount").value;
     const note = document.getElementById("entryNote").value;
+    const paymentMethod = document.getElementById("paymentMethod") ? document.getElementById("paymentMethod").value : "efectivo";
 
     if (!category) {
       alert("Por favor selecciona una categoría");
@@ -405,13 +445,23 @@ if (document.getElementById("entryForm")) {
     try {
       const res = await apiFetch("/entries", {
         method: "POST",
-        body: { type: type, amount: amount, note: note, category: category },
+        body: { 
+          type: type, 
+          amount: amount, 
+          note: note, 
+          category: category,
+          payment_method: paymentMethod
+        },
       });
 
       if (res.success) {
         loadData();
         document.getElementById("entryForm").reset();
         document.getElementById("entryType").dispatchEvent(new Event('change'));
+        // Restablecer método de pago a efectivo
+        if (document.getElementById("paymentMethod")) {
+          document.getElementById("paymentMethod").value = "efectivo";
+        }
       } else {
         alert(res.error || "Error al guardar");
       }
@@ -467,7 +517,8 @@ if (document.getElementById("entryForm")) {
           type: "INCOME",
           amount: Number(val),
           note: "Calculadora",
-          category: "otros"
+          category: "otros",
+          payment_method: "efectivo"
         },
       });
 
@@ -684,7 +735,8 @@ if (document.getElementById("entryForm")) {
             type: "INCOME",
             amount: parseFloat(currentCalculation.salePrice),
             note: "Venta de producto artesanal (calculado)",
-            category: "ventas"
+            category: "ventas",
+            payment_method: "transferencia"
           },
         });
 
@@ -1155,4 +1207,4 @@ if (document.getElementById("entryForm")) {
   loadAccountInfo();
 }
 
-console.log("app.js cargado completamente con sistema de recordatorios inteligentes");
+console.log("app.js cargado completamente con método de pago y recordatorios inteligentes");

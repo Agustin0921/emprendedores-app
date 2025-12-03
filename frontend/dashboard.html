@@ -100,6 +100,13 @@
               </select>
               <input type="number" id="entryAmount" placeholder="Monto" step="0.01" required />
               <input type="text" id="entryNote" placeholder="Descripción" required />
+              <select id="paymentMethod">
+                <option value="efectivo">Efectivo</option>
+                <option value="transferencia">Transferencia</option>
+                <option value="tarjeta">Tarjeta</option>
+                <option value="otro">Otro</option>
+              </select>
+
               <button type="submit" class="btn">
                 <i class='bx bx-plus'></i> Agregar
               </button>

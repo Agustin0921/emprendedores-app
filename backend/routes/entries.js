@@ -30,13 +30,13 @@ function auth(req, res, next) {
   }
 }
 
-// ACTUALIZAR ESTA RUTA POST PARA INCLUIR CATEGORÍA
+// RUTA POST ACTUALIZADA CON payment_method
 router.post("/", auth, async (req, res) => {
-  const { type, amount, note, category } = req.body;
+  const { type, amount, note, category, payment_method } = req.body;
   try {
     await db.query(
-      "INSERT INTO entries (user_id, type, amount, note, category) VALUES ($1, $2, $3, $4, $5)",
-      [req.user.id, type, amount, note, category || '']
+      "INSERT INTO entries (user_id, type, amount, note, category, payment_method) VALUES ($1, $2, $3, $4, $5, $6)",
+      [req.user.id, type, amount, note, category || '', payment_method || 'efectivo']
     );
     res.json({ success: true });
   } catch (err) {
@@ -45,11 +45,11 @@ router.post("/", auth, async (req, res) => {
   }
 });
 
-// ACTUALIZAR ESTA RUTA GET PARA ASEGURAR QUE RETORNE created_at
+// RUTA GET ACTUALIZADA CON payment_method
 router.get("/", auth, async (req, res) => {
   try {
     const result = await db.query(
-      "SELECT id, user_id, type, amount, note, category, created_at FROM entries WHERE user_id = $1 ORDER BY created_at DESC",
+      "SELECT id, user_id, type, amount, note, category, payment_method, created_at FROM entries WHERE user_id = $1 ORDER BY created_at DESC",
       [req.user.id]
     );
     res.json(result.rows);

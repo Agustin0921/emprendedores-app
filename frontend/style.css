@@ -1512,3 +1512,21 @@ input:focus, select:focus {
 .reminder-item.low {
   border: 1px solid var(--green);
 }
+
+/* Estilos para los métodos de pago */
+.bx-money { color: #22c55e; }
+.bx-transfer { color: #3b82f6; }
+.bx-credit-card { color: #8b5cf6; }
+.bx-wallet { color: #f59e0b; }
+
+/* Mejora visual para el select de método de pago */
+#paymentMethod {
+  margin-top: 8px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%230ea5e9' d='M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 40px;
+  cursor: pointer;
+  appearance: none;
+}
